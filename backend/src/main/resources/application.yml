@@ -1,0 +1,66 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: rural-health-connect-backend
+  profiles:
+    active: dev
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/swasthyasetu?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:Jawahar@2006}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    expiration-ms: ${JWT_EXPIRATION:86400000} # 24 hours
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000}
+  engine:
+    weights:
+      missed-appointment-weight: 20
+      severe-missed-threshold: 3
+      severe-missed-bonus: 40
+      far-distance-threshold-km: 25
+      far-distance-weight: 25
+      moderate-distance-threshold-km: 10
+      moderate-distance-weight: 15
+      elderly-age-threshold: 65
+      elderly-weight: 10
+      pediatric-age-threshold: 5
+      pediatric-weight: 10
+      multiple-chronic-threshold: 2
+      multiple-chronic-weight: 15
+      maternal-care-weight: 10
+      baseline-score: 20
+      max-score: 98
+      min-score: 5
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+logging:
+  level:
+    root: INFO
+    com.swasthyasetu: INFO
+    org.springframework.security: WARN
