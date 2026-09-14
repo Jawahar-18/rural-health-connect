@@ -1,5 +1,7 @@
 import React from 'react';
 import { apiService } from '../../services/apiService';
+import { useTranslation } from '../../context/MultilingualContext';
+import { AdminFeedbackCenter } from '../../components/admin/AdminFeedbackCenter';
 
 import { 
   ResponsiveContainer, 
@@ -15,6 +17,7 @@ import {
 } from 'recharts';
 
 export const FacilityDashboard: React.FC = () => {
+  const { t } = useTranslation();
   const kpiData = apiService.getFacilityKPIs()[0];
   const stock = apiService.getMedicineStock();
 
@@ -29,9 +32,9 @@ export const FacilityDashboard: React.FC = () => {
   ];
 
   const stockPieData = [
-    { name: 'Available', value: stock.filter(s => s.status === 'AVAILABLE').length, color: '#16A34A' },
-    { name: 'Low Stock', value: stock.filter(s => s.status === 'LOW_STOCK').length, color: '#F59E0B' },
-    { name: 'Out of Stock', value: stock.filter(s => s.status === 'OUT_OF_STOCK').length, color: '#DC2626' },
+    { name: t('available'), value: stock.filter(s => s.status === 'AVAILABLE').length, color: '#16A34A' },
+    { name: t('lowStock'), value: stock.filter(s => s.status === 'LOW_STOCK').length, color: '#F59E0B' },
+    { name: t('outOfStock'), value: stock.filter(s => s.status === 'OUT_OF_STOCK').length, color: '#DC2626' },
   ];
 
   return (
@@ -43,11 +46,11 @@ export const FacilityDashboard: React.FC = () => {
         <div className="relative z-10 space-y-1.5">
           <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md text-purple-200 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-white/20 shadow-inner">
             <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
-            PHC / CHC Facility Operations Portal
+            {t('facilityPortalTag')}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">{kpiData.facilityName} Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">{kpiData.facilityName} {t('dashboard')}</h1>
           <p className="text-xs sm:text-sm text-purple-200 font-medium">
-            District: <strong className="text-white">{kpiData.district}</strong> • Medical Officer In-Charge Operations & Resource Allocation
+            {t('region')}: <strong className="text-white">{kpiData.district}</strong> • {t('appSubtitle')}
           </p>
         </div>
       </div>
@@ -55,27 +58,27 @@ export const FacilityDashboard: React.FC = () => {
       {/* 8 Operational KPIs Grid - Bold Borders & Deep Shadows */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-4">
         <div className="bg-white p-5 rounded-3xl border-2 border-slate-200/90 hover:border-indigo-400 shadow-md hover:shadow-xl transition-all duration-200">
-          <div className="text-xs font-black text-slate-500 uppercase tracking-wider">Total Patients Today</div>
+          <div className="text-xs font-black text-slate-500 uppercase tracking-wider">{t('totalPatientsToday')}</div>
           <div className="text-3xl font-black text-slate-900 mt-2">{kpiData.totalPatientsToday}</div>
           <div className="text-xs text-emerald-700 font-bold mt-1">↑ 12% vs last week</div>
         </div>
 
         <div className="bg-white p-5 rounded-3xl border-2 border-slate-200/90 hover:border-indigo-400 shadow-md hover:shadow-xl transition-all duration-200">
-          <div className="text-xs font-black text-slate-500 uppercase tracking-wider">Avg Wait Time</div>
+          <div className="text-xs font-black text-slate-500 uppercase tracking-wider">{t('avgWaitTime')}</div>
           <div className="text-3xl font-black text-slate-900 mt-2">{kpiData.avgWaitingTimeMinutes} <span className="text-sm font-semibold text-slate-500">mins</span></div>
-          <div className="text-xs text-emerald-700 font-bold mt-1">Within 20 min Target</div>
+          <div className="text-xs text-emerald-700 font-bold mt-1">{t('withinTarget')}</div>
         </div>
 
         <div className="bg-white p-5 rounded-3xl border-2 border-purple-300 hover:border-purple-500 bg-purple-50/20 shadow-md hover:shadow-xl transition-all duration-200">
-          <div className="text-xs font-black text-purple-700 uppercase tracking-wider">Referral Completion</div>
+          <div className="text-xs font-black text-purple-700 uppercase tracking-wider">{t('referralCompletionRate')}</div>
           <div className="text-3xl font-black text-purple-600 mt-2">{kpiData.referralCompletionRate}%</div>
           <div className="text-xs text-purple-800 font-bold mt-1">Target: &gt;85% (Optimal)</div>
         </div>
 
         <div className="bg-white p-5 rounded-3xl border-2 border-rose-300 hover:border-rose-500 bg-rose-50/20 shadow-md hover:shadow-xl transition-all duration-200">
-          <div className="text-xs font-black text-rose-700 uppercase tracking-wider">Medicine Shortages</div>
+          <div className="text-xs font-black text-rose-700 uppercase tracking-wider">{t('medicineShortages')}</div>
           <div className="text-3xl font-black text-rose-600 mt-2">{kpiData.medicineShortageCount}</div>
-          <div className="text-xs text-rose-800 font-bold mt-1">Reorder Required</div>
+          <div className="text-xs text-rose-800 font-bold mt-1">{t('reorderRequired')}</div>
         </div>
       </div>
 
@@ -83,7 +86,7 @@ export const FacilityDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Patient Volume Trend Chart */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-soft space-y-3">
-          <h3 className="font-bold text-slate-900 text-sm">Daily Patient OPD Volume Trend</h3>
+          <h3 className="font-bold text-slate-900 text-sm">{t('dailyVolumeTrend')}</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={volumeData}>
@@ -99,7 +102,7 @@ export const FacilityDashboard: React.FC = () => {
 
         {/* Medicine Inventory Status Breakdown */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-soft space-y-3">
-          <h3 className="font-bold text-slate-900 text-sm">Medicine Stock Status Breakdown</h3>
+          <h3 className="font-bold text-slate-900 text-sm">{t('medicineStatusBreakdown')}</h3>
           <div className="h-64 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -122,12 +125,22 @@ export const FacilityDashboard: React.FC = () => {
           </div>
 
           <div className="flex justify-center gap-4 text-xs font-semibold">
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-emerald-600"></span> Available</span>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-amber-500"></span> Low Stock</span>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-rose-600"></span> Out of Stock</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-emerald-600"></span> {t('available')}</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-amber-500"></span> {t('lowStock')}</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-rose-600"></span> {t('outOfStock')}</span>
           </div>
         </div>
+      </div>
+
+      {/* Patient Feedback & Care Refusal Governance Center */}
+      <div className="pt-2">
+        <div className="mb-3">
+          <h2 className="text-xl font-black text-slate-900 tracking-tight">Patient Care Retention & Grievance Governance</h2>
+          <p className="text-xs text-slate-500">Monitor teleconsultation feedback, refusal to attend ("I will not come") escalations, and automated 5–6x follow-up continuous archiving.</p>
+        </div>
+        <AdminFeedbackCenter role="FACILITY_ADMIN" />
       </div>
     </div>
   );
 };
+

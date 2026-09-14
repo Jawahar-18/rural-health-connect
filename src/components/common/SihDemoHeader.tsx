@@ -15,16 +15,16 @@ import confetti from 'canvas-confetti';
 
 export const SihDemoHeader: React.FC = () => {
   const { currentUser, switchRole } = useAuth();
-  const { language, setLanguage } = useTranslation();
+  const { language, setLanguage, t } = useTranslation();
   const { isOnline, toggleSimulatedOffline, pendingSyncCount, syncDataNow } = useOffline();
   const [isSyncing, setIsSyncing] = useState(false);
 
   const roles: { role: UserRole; label: string; bg: string }[] = [
-    { role: 'PATIENT', label: 'Patient', bg: 'bg-emerald-600' },
-    { role: 'HEALTH_WORKER', label: 'Health Worker', bg: 'bg-teal-600' },
-    { role: 'DOCTOR', label: 'Doctor', bg: 'bg-blue-600' },
-    { role: 'FACILITY_ADMIN', label: 'Facility Admin', bg: 'bg-purple-600' },
-    { role: 'DISTRICT_ADMIN', label: 'District Admin', bg: 'bg-amber-600' },
+    { role: 'PATIENT', label: t('rolePatient'), bg: 'bg-emerald-600' },
+    { role: 'HEALTH_WORKER', label: t('roleHealthWorker'), bg: 'bg-teal-600' },
+    { role: 'DOCTOR', label: t('roleDoctor'), bg: 'bg-blue-600' },
+    { role: 'FACILITY_ADMIN', label: t('roleFacilityAdmin'), bg: 'bg-purple-600' },
+    { role: 'DISTRICT_ADMIN', label: t('roleDistrictAdmin'), bg: 'bg-amber-600' },
   ];
 
   const languages: { code: LanguageCode; label: string }[] = [
@@ -50,17 +50,17 @@ export const SihDemoHeader: React.FC = () => {
       {/* Left: Branding & SIH Tag */}
       <div className="flex items-center gap-2">
         <span className="bg-gov-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
-          <Sparkles className="w-3 h-3" /> SIH 2026 #26133
+          <Sparkles className="w-3 h-3" /> {t('sihBadge')}
         </span>
         <span className="hidden md:inline font-semibold text-slate-300">
-          Government of Maharashtra Healthcare Access Platform
+          {t('appSubtitle')}
         </span>
       </div>
 
       {/* Center: SIH Judge Quick Demo Switcher */}
       <div className="flex items-center gap-1 overflow-x-auto py-0.5">
         <span className="text-slate-400 font-medium whitespace-nowrap mr-1 flex items-center gap-1">
-          <UserCheck className="w-3.5 h-3.5 text-gov-green-400" /> Judge Role Switch:
+          <UserCheck className="w-3.5 h-3.5 text-gov-green-400" /> {t('judgeRoleSwitch')}
         </span>
         {roles.map(r => (
           <button
@@ -76,6 +76,7 @@ export const SihDemoHeader: React.FC = () => {
           </button>
         ))}
       </div>
+
 
       {/* Right: Language Selector & Network Simulator */}
       <div className="flex items-center gap-3">

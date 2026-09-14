@@ -8,7 +8,9 @@ import type {
   FacilityKPI,
   TriageRecord,
   ReferralStatus,
-  AppointmentStatus
+  AppointmentStatus,
+  PatientFeedback,
+  FeedbackStatus
 } from '../types';
 
 import { 
@@ -18,7 +20,8 @@ import {
   INITIAL_PRESCRIPTIONS, 
   INITIAL_MEDICINE_STOCK, 
   INITIAL_DIAGNOSTICS, 
-  DISTRICT_FACILITY_KPIS
+  DISTRICT_FACILITY_KPIS,
+  INITIAL_FEEDBACKS
 } from '../data/mockData';
 
 // API Base URL for Java Spring Boot Backend
@@ -33,6 +36,7 @@ const STORAGE_KEYS = {
   STOCK: 'rhc_stock_v1',
   DIAGNOSTICS: 'rhc_diagnostics_v1',
   TRIAGE: 'rhc_triage_v1',
+  FEEDBACK: 'rhc_feedback_v1',
   OFFLINE_QUEUE: 'rhc_offline_queue_v1',
   AUTH_TOKEN: 'rhc_jwt_token_v1',
 };
@@ -71,7 +75,63 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
+// Helper to normalize patient records from backend DTO or local format
+function normalizePatient(raw: any): Patient {
+  const relevantConditions = Array.isArray(raw.relevantConditions)
+    ? raw.relevantConditions
+    : (raw.relevantConditions ? [String(raw.relevantConditions)] : []);
+
+  const chronicConditions = Array.isArray(raw.chronicConditions)
+    ? raw.chronicConditions
+    : (raw.chronicConditions ? [String(raw.chronicConditions)] : []);
+
+  return {
+    id: String(raw.id || `pat-${Date.now()}`),
+    name: String(raw.name || 'Unnamed Patient'),
+    age: Number(raw.age) || 30,
+    gender: raw.gender === 'Male' || raw.gender === 'Female' ? raw.gender : 'Other',
+    phone: String(raw.phone || ''),
+    address: String(raw.address || `Gram Panchayat Area, ${raw.village || 'Junnar'}`),
+    village: String(raw.village || 'Junnar'),
+    emergencyContact: String(raw.emergencyContact || 'Family Member'),
+    relevantConditions,
+    isPregnant: Boolean(raw.isPregnant ?? raw.pregnant ?? false),
+    pregnancyTrimester: raw.pregnancyTrimester ? (Number(raw.pregnancyTrimester) as 1 | 2 | 3) : undefined,
+    chronicConditions,
+    preferredLanguage: (raw.preferredLanguage as any) || 'mr',
+    followupRiskScore: Number(raw.followupRiskScore) || 20,
+    followupRiskLevel: raw.followupRiskLevel || 'LOW',
+    clinicalPriority: raw.clinicalPriority || 'ROUTINE',
+    interventionPriority: raw.interventionPriority || 'LOW',
+    distanceKm: Number(raw.distanceKm) || 5,
+    totalAppointments: Number(raw.totalAppointments) || 1,
+    missedAppointments: Number(raw.missedAppointments) || 0,
+    lastAppointmentDate: raw.lastAppointmentDate || undefined,
+    nextAppointmentDate: raw.nextAppointmentDate || undefined,
+    activeReferralId: raw.activeReferralId || undefined,
+    registeredDate: raw.registeredDate || new Date().toISOString().split('T')[0],
+    syncedOffline: Boolean(raw.syncedOffline),
+    isArchived: Boolean(raw.isArchived ?? raw.archived ?? false),
+    archivedReason: raw.archivedReason || undefined,
+    archivedDate: raw.archivedDate || undefined,
+    consecutiveFollowupsCompleted: Number(raw.consecutiveFollowupsCompleted) || 0,
+    consecutiveFollowupsMissed: Number(raw.consecutiveFollowupsMissed) || 0,
+    totalFollowupsAttended: Number(raw.totalFollowupsAttended) || 0,
+    lastFeedbackStatus: raw.lastFeedbackStatus || undefined,
+  };
+}
+
 export const apiService = {
+  // Check if Spring Boot MySQL backend is reachable
+  isBackendOnline: async (): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/patients`, { method: 'GET', signal: AbortSignal.timeout(3000) });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  },
+
   // Auth Token & Backend Login
   login: async (username: string, pass: string): Promise<string | null> => {
     try {
@@ -108,7 +168,8 @@ export const apiService = {
 
   // Patients
   getPatients: (): Patient[] => {
-    return loadData<Patient[]>(STORAGE_KEYS.PATIENTS, INITIAL_PATIENTS);
+    const rawList = loadData<any[]>(STORAGE_KEYS.PATIENTS, INITIAL_PATIENTS);
+    return rawList.map(normalizePatient);
   },
 
   getPatientById: (id: string): Patient | undefined => {
@@ -116,24 +177,31 @@ export const apiService = {
     return patients.find(p => p.id === id);
   },
 
-  registerPatient: (patientData: Omit<Patient, 'id' | 'registeredDate'> & { isOffline?: boolean }): Patient => {
+  registerPatient: async (patientData: Omit<Patient, 'id' | 'registeredDate'> & { isOffline?: boolean }): Promise<Patient> => {
     const patients = apiService.getPatients();
-    const newId = `pat-${Date.now().toString().slice(-4)}`;
-    const newPatient: Patient = {
+    const tempId = `pat-${Date.now().toString().slice(-4)}`;
+    
+    // Create optimistic local representation
+    let newPatient: Patient = normalizePatient({
       ...patientData,
-      id: newId,
+      id: tempId,
       registeredDate: new Date().toISOString().split('T')[0],
       syncedOffline: patientData.isOffline || false,
-    };
+    });
 
+    // Save immediately to local cache for instant UI feedback
     patients.unshift(newPatient);
     saveData(STORAGE_KEYS.PATIENTS, patients);
+    window.dispatchEvent(new CustomEvent('rhc_data_synced', { detail: { count: patients.length, patient: newPatient } }));
 
     if (patientData.isOffline) {
       apiService.enqueueOfflineRecord({ type: 'PATIENT_REGISTRATION', payload: newPatient });
-    } else {
+      return newPatient;
+    }
+
+    try {
       // Send to Spring Boot backend for MySQL persistence
-      fetch(`${API_BASE_URL}/patients`, {
+      const res = await fetch(`${API_BASE_URL}/patients`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({
@@ -151,18 +219,25 @@ export const apiService = {
           preferredLanguage: newPatient.preferredLanguage,
           distanceKm: newPatient.distanceKm,
         }),
-      })
-      .then(async (res) => {
-        if (res.ok) {
-          const savedPatient = await res.json();
-          console.log('[RHC] Patient successfully saved to MySQL database:', savedPatient);
-          // Refresh patient directory from backend
-          apiService.syncWithBackend();
-        } else {
-          console.warn('[RHC] Backend rejected patient save:', res.status, res.statusText);
-        }
-      })
-      .catch(err => console.debug('[RHC] Backend offline, patient saved locally:', err));
+      });
+
+      if (res.ok) {
+        const savedDto = await res.json();
+        const savedPatient = normalizePatient(savedDto);
+        console.log('[RHC] Patient successfully persisted to MySQL database with ID:', savedPatient.id);
+
+        // Replace optimistic record with canonical backend record (proper MySQL ID + AI risk score)
+        const currentList = apiService.getPatients();
+        const updatedList = currentList.map(p => p.id === tempId ? savedPatient : p);
+        saveData(STORAGE_KEYS.PATIENTS, updatedList);
+        window.dispatchEvent(new CustomEvent('rhc_data_synced', { detail: { count: updatedList.length, patient: savedPatient } }));
+        return savedPatient;
+      } else {
+        console.warn('[RHC] Backend returned non-200 for patient save:', res.status);
+      }
+    } catch (err) {
+      console.debug('[RHC] Backend currently unreachable, patient retained in local queue:', err);
+      apiService.enqueueOfflineRecord({ type: 'PATIENT_REGISTRATION', payload: newPatient });
     }
 
     return newPatient;
@@ -440,20 +515,70 @@ export const apiService = {
   },
 
   // Async synchronizer to refresh local storage from Spring Boot MySQL backend if accessible
-  syncWithBackend: async (): Promise<void> => {
+  syncWithBackend: async (): Promise<{ success: boolean; count: number; error?: string }> => {
     try {
       const headers = getAuthHeaders();
-      const [patRes, refRes, stockRes] = await Promise.allSettled([
+      const [patRes, refRes, stockRes, fbRes] = await Promise.allSettled([
         fetch(`${API_BASE_URL}/patients`, { headers }),
         fetch(`${API_BASE_URL}/referrals`, { headers }),
         fetch(`${API_BASE_URL}/medicines/availability`, { headers }),
+        fetch(`${API_BASE_URL}/feedback`, { headers }),
       ]);
 
+      let syncedCount = 0;
+
       if (patRes.status === 'fulfilled' && patRes.value.ok) {
-        const patients = await patRes.value.json();
-        if (Array.isArray(patients) && patients.length > 0) {
-          saveData(STORAGE_KEYS.PATIENTS, patients);
-          console.log(`[RHC] Synchronized ${patients.length} patients from MySQL database.`);
+        const remotePatientsRaw = await patRes.value.json();
+        if (Array.isArray(remotePatientsRaw)) {
+          let remotePatients = remotePatientsRaw.map(normalizePatient);
+          const localPatients = apiService.getPatients();
+
+          // Identify any local patient not yet in MySQL (check ID or Phone)
+          const unsyncedLocals = localPatients.filter(localPt => {
+            const hasRemoteMatch = remotePatients.some(remPt => 
+              remPt.id === localPt.id || 
+              (localPt.phone && remPt.phone && localPt.phone.replace(/\s+/g, '') === remPt.phone.replace(/\s+/g, ''))
+            );
+            return !hasRemoteMatch;
+          });
+
+          // Upload any unsaved local patients to MySQL
+          for (const unsavedPt of unsyncedLocals) {
+            try {
+              const postRes = await fetch(`${API_BASE_URL}/patients`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                  name: unsavedPt.name,
+                  age: unsavedPt.age,
+                  gender: unsavedPt.gender,
+                  phone: unsavedPt.phone,
+                  address: unsavedPt.address,
+                  village: unsavedPt.village,
+                  emergencyContact: unsavedPt.emergencyContact,
+                  relevantConditions: unsavedPt.relevantConditions,
+                  isPregnant: unsavedPt.isPregnant,
+                  pregnancyTrimester: unsavedPt.pregnancyTrimester,
+                  chronicConditions: unsavedPt.chronicConditions,
+                  preferredLanguage: unsavedPt.preferredLanguage,
+                  distanceKm: unsavedPt.distanceKm,
+                }),
+              });
+              if (postRes.ok) {
+                const createdRemoteDto = await postRes.json();
+                const createdRemote = normalizePatient(createdRemoteDto);
+                remotePatients.unshift(createdRemote);
+                console.log(`[RHC] Auto-synced local patient "${unsavedPt.name}" into MySQL database.`);
+              }
+            } catch (postErr) {
+              console.warn(`[RHC] Could not auto-sync patient ${unsavedPt.name} to MySQL:`, postErr);
+            }
+          }
+
+          saveData(STORAGE_KEYS.PATIENTS, remotePatients);
+          syncedCount = remotePatients.length;
+          console.log(`[RHC] Successfully synchronized ${syncedCount} patients with MySQL database.`);
+          window.dispatchEvent(new CustomEvent('rhc_data_synced', { detail: { count: syncedCount, timestamp: Date.now() } }));
         }
       }
 
@@ -470,8 +595,153 @@ export const apiService = {
           saveData(STORAGE_KEYS.STOCK, stock);
         }
       }
+
+      if (fbRes.status === 'fulfilled' && fbRes.value.ok) {
+        const feedbacks = await fbRes.value.json();
+        if (Array.isArray(feedbacks) && feedbacks.length > 0) {
+          saveData(STORAGE_KEYS.FEEDBACK, feedbacks);
+        }
+      }
+
+      return { success: true, count: syncedCount };
     } catch (err) {
-      console.debug('[RHC] Background sync skipped (offline or initial boot):', err);
+      console.debug('[RHC] Background sync skipped (offline or server unreachable):', err);
+      return { success: false, count: 0, error: String(err) };
     }
+  },
+
+  // Patient Feedback & Retention Center
+  getFeedbacks: (): PatientFeedback[] => {
+    return loadData<PatientFeedback[]>(STORAGE_KEYS.FEEDBACK, INITIAL_FEEDBACKS);
+  },
+
+  submitFeedback: (feedbackData: Omit<PatientFeedback, 'id' | 'createdAt' | 'status'> & { status?: FeedbackStatus }): PatientFeedback => {
+    const feedbacks = apiService.getFeedbacks();
+    const newFeedback: PatientFeedback = {
+      ...feedbackData,
+      id: `fb-${Date.now().toString().slice(-4)}`,
+      status: feedbackData.status || (feedbackData.refusesFollowUp || feedbackData.satisfactionLevel === 'DISSATISFIED' ? 'ACTION_REQUIRED' : 'NEW'),
+      createdAt: new Date().toISOString(),
+    };
+
+    feedbacks.unshift(newFeedback);
+    saveData(STORAGE_KEYS.FEEDBACK, feedbacks);
+
+    // Update patient retention metrics
+    const patient = apiService.getPatientById(feedbackData.patientId);
+    if (patient) {
+      const updates: Partial<Patient> = {};
+      if (feedbackData.refusesFollowUp) {
+        updates.lastFeedbackStatus = 'REFUSED_FOLLOW_UP';
+        const missed = (patient.consecutiveFollowupsMissed || 0) + 1;
+        updates.consecutiveFollowupsMissed = missed;
+        updates.consecutiveFollowupsCompleted = 0;
+
+        // Auto-archive if 5+ consecutive refusals / missed follow-ups
+        if (missed >= 5) {
+          updates.isArchived = true;
+          updates.archivedReason = `Continuous follow-up refusal / non-attendance (${missed} consecutive sessions missed)`;
+          updates.archivedDate = new Date().toISOString().split('T')[0];
+        }
+      } else if (feedbackData.satisfactionLevel === 'DISSATISFIED') {
+        updates.lastFeedbackStatus = 'DISSATISFIED_WITH_TREATMENT';
+      } else {
+        updates.lastFeedbackStatus = 'SATISFIED';
+      }
+
+      apiService.updatePatient(patient.id, updates);
+    }
+
+    // Sync to backend
+    fetch(`${API_BASE_URL}/feedback`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        patientId: feedbackData.patientId,
+        patientName: feedbackData.patientName,
+        patientPhone: feedbackData.patientPhone,
+        callId: feedbackData.callId,
+        callAttended: feedbackData.callAttended,
+        satisfactionLevel: feedbackData.satisfactionLevel,
+        refusesFollowUp: feedbackData.refusesFollowUp,
+        refusalReason: feedbackData.refusalReason,
+        feedbackNotes: feedbackData.feedbackNotes,
+        recordedByName: feedbackData.recordedByName,
+        recordedByRole: feedbackData.recordedByRole,
+      }),
+    }).catch(err => console.debug('Backend offline, feedback stored in local cache:', err));
+
+    return newFeedback;
+  },
+
+  reviewFeedback: (id: string, status: FeedbackStatus, adminReviewNotes: string): PatientFeedback | undefined => {
+    const feedbacks = apiService.getFeedbacks();
+    const idx = feedbacks.findIndex(f => f.id === id);
+    if (idx === -1) return undefined;
+
+    feedbacks[idx].status = status;
+    feedbacks[idx].adminReviewNotes = adminReviewNotes;
+    feedbacks[idx].reviewedAt = new Date().toISOString();
+    saveData(STORAGE_KEYS.FEEDBACK, feedbacks);
+
+    fetch(`${API_BASE_URL}/feedback/${id}/review`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status, adminReviewNotes }),
+    }).catch(err => console.debug('Backend offline, feedback review stored locally:', err));
+
+    return feedbacks[idx];
+  },
+
+  archivePatient: (patientId: string, reason: string): Patient | undefined => {
+    const updates: Partial<Patient> = {
+      isArchived: true,
+      archivedReason: reason,
+      archivedDate: new Date().toISOString().split('T')[0],
+    };
+    return apiService.updatePatient(patientId, updates);
+  },
+
+  unarchivePatient: (patientId: string): Patient | undefined => {
+    const updates: Partial<Patient> = {
+      isArchived: false,
+      archivedReason: undefined,
+      archivedDate: undefined,
+      consecutiveFollowupsMissed: 0,
+    };
+    return apiService.updatePatient(patientId, updates);
+  },
+
+  recordFollowUpVisit: (patientId: string, attended: boolean): Patient | undefined => {
+    const patient = apiService.getPatientById(patientId);
+    if (!patient) return undefined;
+
+    const updates: Partial<Patient> = {};
+    if (attended) {
+      const completed = (patient.consecutiveFollowupsCompleted || 0) + 1;
+      updates.consecutiveFollowupsCompleted = completed;
+      updates.totalFollowupsAttended = (patient.totalFollowupsAttended || 0) + 1;
+      updates.consecutiveFollowupsMissed = 0;
+
+      // Auto-archive patient if 5-6 continuous follow-ups completed
+      if (completed >= 5) {
+        updates.isArchived = true;
+        updates.archivedReason = `Completed continuous follow-up course (${completed} consecutive sessions attended)`;
+        updates.archivedDate = new Date().toISOString().split('T')[0];
+      }
+    } else {
+      const missed = (patient.consecutiveFollowupsMissed || 0) + 1;
+      updates.consecutiveFollowupsMissed = missed;
+      updates.consecutiveFollowupsCompleted = 0;
+
+      // Auto-archive if 5+ consecutive missed
+      if (missed >= 5) {
+        updates.isArchived = true;
+        updates.archivedReason = `Continuous follow-up non-attendance (${missed} consecutive sessions missed)`;
+        updates.archivedDate = new Date().toISOString().split('T')[0];
+      }
+    }
+
+    return apiService.updatePatient(patientId, updates);
   }
 };

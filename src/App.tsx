@@ -27,6 +27,7 @@ import { DistrictDashboard } from './pages/district/DistrictDashboard';
 
 // Shared Generic View for secondary sub-pages
 import { GenericModuleView } from './pages/common/GenericModuleView';
+import { AdminFeedbackCenter } from './components/admin/AdminFeedbackCenter';
 
 export const App: React.FC = () => {
   return (
@@ -52,6 +53,7 @@ export const App: React.FC = () => {
                     <Route path="diagnostics" element={<GenericModuleView title="Diagnostics & Lab Report Status" role="PATIENT" />} />
                     <Route path="medicines" element={<GenericModuleView title="Local PHC Medicine Availability Finder" role="PATIENT" />} />
                     <Route path="followups" element={<GenericModuleView title="Upcoming & Completed Follow-ups" role="PATIENT" />} />
+                    <Route path="feedback" element={<PatientDashboard />} />
                     <Route path="notifications" element={<GenericModuleView title="Patient Alerts & Notification Center" role="PATIENT" />} />
                     <Route path="profile" element={<GenericModuleView title="Patient Health Card & ABHA Profile" role="PATIENT" />} />
                     <Route path="*" element={<Navigate to="/patient/dashboard" replace />} />
@@ -104,6 +106,7 @@ export const App: React.FC = () => {
                     <Route path="medicines" element={<GenericModuleView title="PHC Medicine Stock & Shortage Alert Center" role="FACILITY_ADMIN" />} />
                     <Route path="diagnostics" element={<GenericModuleView title="Diagnostic Equipment Maintenance & Lab Status" role="FACILITY_ADMIN" />} />
                     <Route path="referrals" element={<GenericModuleView title="Facility Referral Completion Rates" role="FACILITY_ADMIN" />} />
+                    <Route path="feedback" element={<div className="space-y-4"><h1 className="text-2xl font-black text-slate-900 tracking-tight">Facility Patient Feedback & Retention Center</h1><AdminFeedbackCenter role="FACILITY_ADMIN" /></div>} />
                     <Route path="reports" element={<GenericModuleView title="Operational & Performance Reports" role="FACILITY_ADMIN" />} />
                     <Route path="*" element={<Navigate to="/facility/dashboard" replace />} />
                   </Routes>
@@ -120,6 +123,7 @@ export const App: React.FC = () => {
                     <Route path="referrals" element={<GenericModuleView title="District Referral Completion Analytics" role="DISTRICT_ADMIN" />} />
                     <Route path="followups" element={<GenericModuleView title="Follow-up Completion Analytics" role="DISTRICT_ADMIN" />} />
                     <Route path="medicines" element={<GenericModuleView title="District Medicine Shortage Heatmap" role="DISTRICT_ADMIN" />} />
+                    <Route path="feedback" element={<div className="space-y-4"><h1 className="text-2xl font-black text-slate-900 tracking-tight">District Patient Grievance & Refusal Center</h1><AdminFeedbackCenter role="DISTRICT_ADMIN" /></div>} />
                     <Route path="diagnostics" element={<GenericModuleView title="Diagnostic Availability Monitor" role="DISTRICT_ADMIN" />} />
                     <Route path="quality" element={<GenericModuleView title="Healthcare Quality & Governance Metrics" role="DISTRICT_ADMIN" />} />
                     <Route path="reports" element={<GenericModuleView title="District Annual & Monthly Healthcare Reports" role="DISTRICT_ADMIN" />} />

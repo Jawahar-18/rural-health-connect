@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertCircle, AlertTriangle, CheckCircle, Info, Flame } from 'lucide-react';
+import { useTranslation } from '../../context/MultilingualContext';
 
 interface PriorityBadgeProps {
   priority: 'ROUTINE' | 'MODERATE' | 'HIGH' | 'URGENT' | 'CRITICAL' | string;
@@ -12,6 +13,7 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
   size = 'md', 
   showIcon = true 
 }) => {
+  const { t } = useTranslation();
   const p = (priority || 'ROUTINE').toUpperCase();
 
   const getSizeClasses = () => {
@@ -28,34 +30,35 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
         return {
           bg: 'bg-rose-100 text-rose-800 border-rose-300 ring-rose-500/20',
           icon: Flame,
-          label: 'CRITICAL INTERVENTION',
+          label: t('priorityCritical'),
         };
       case 'URGENT':
         return {
           bg: 'bg-red-100 text-red-700 border-red-300 ring-red-500/20',
           icon: AlertCircle,
-          label: 'URGENT ATTENTION',
+          label: t('priorityUrgent'),
         };
       case 'HIGH':
         return {
           bg: 'bg-amber-100 text-amber-800 border-amber-300 ring-amber-500/20',
           icon: AlertTriangle,
-          label: 'HIGH PRIORITY',
+          label: t('priorityHigh'),
         };
       case 'MODERATE':
         return {
           bg: 'bg-blue-100 text-blue-800 border-blue-300 ring-blue-500/20',
           icon: Info,
-          label: 'MODERATE',
+          label: t('priorityModerate'),
         };
       default:
         return {
           bg: 'bg-emerald-100 text-emerald-800 border-emerald-300 ring-emerald-500/20',
           icon: CheckCircle,
-          label: 'ROUTINE',
+          label: t('priorityRoutine'),
         };
     }
   };
+
 
   const config = getStyle();
   const IconComponent = config.icon;

@@ -43,6 +43,15 @@ public class PatientDto {
     private String registeredDate;
     private boolean syncedOffline = false;
 
+    // Archiving & Care Retention
+    private boolean isArchived = false;
+    private String archivedReason;
+    private String archivedDate;
+    private int consecutiveFollowupsCompleted = 0;
+    private int consecutiveFollowupsMissed = 0;
+    private int totalFollowupsAttended = 0;
+    private String lastFeedbackStatus;
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -120,6 +129,27 @@ public class PatientDto {
 
     public boolean isSyncedOffline() { return syncedOffline; }
     public void setSyncedOffline(boolean syncedOffline) { this.syncedOffline = syncedOffline; }
+
+    public boolean isArchived() { return isArchived; }
+    public void setArchived(boolean archived) { isArchived = archived; }
+
+    public String getArchivedReason() { return archivedReason; }
+    public void setArchivedReason(String archivedReason) { this.archivedReason = archivedReason; }
+
+    public String getArchivedDate() { return archivedDate; }
+    public void setArchivedDate(String archivedDate) { this.archivedDate = archivedDate; }
+
+    public int getConsecutiveFollowupsCompleted() { return consecutiveFollowupsCompleted; }
+    public void setConsecutiveFollowupsCompleted(int consecutiveFollowupsCompleted) { this.consecutiveFollowupsCompleted = consecutiveFollowupsCompleted; }
+
+    public int getConsecutiveFollowupsMissed() { return consecutiveFollowupsMissed; }
+    public void setConsecutiveFollowupsMissed(int consecutiveFollowupsMissed) { this.consecutiveFollowupsMissed = consecutiveFollowupsMissed; }
+
+    public int getTotalFollowupsAttended() { return totalFollowupsAttended; }
+    public void setTotalFollowupsAttended(int totalFollowupsAttended) { this.totalFollowupsAttended = totalFollowupsAttended; }
+
+    public String getLastFeedbackStatus() { return lastFeedbackStatus; }
+    public void setLastFeedbackStatus(String lastFeedbackStatus) { this.lastFeedbackStatus = lastFeedbackStatus; }
 
     public static class CreateRequest {
         @NotBlank(message = "Patient name is required")

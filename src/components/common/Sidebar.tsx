@@ -21,7 +21,8 @@ import {
   Building2, 
   BarChart3, 
   ShieldCheck,
-  HeartPulse
+  HeartPulse,
+  HeartHandshake
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -47,6 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
           { to: '/patient/diagnostics', label: t('navDiagnostics'), icon: Activity },
           { to: '/patient/medicines', label: t('navMedicines'), icon: Package },
           { to: '/patient/followups', label: t('navFollowups'), icon: HeartPulse },
+          { to: '/patient/feedback', label: t('navFeedback'), icon: HeartHandshake },
           { to: '/patient/notifications', label: t('navNotifications'), icon: Bell },
           { to: '/patient/profile', label: t('navProfile'), icon: User },
         ];
@@ -82,6 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
           { to: '/facility/medicines', label: t('navMedicines'), icon: Package },
           { to: '/facility/diagnostics', label: t('navDiagnostics'), icon: Activity },
           { to: '/facility/referrals', label: t('navReferrals'), icon: ArrowRightLeft },
+          { to: '/facility/feedback', label: t('navFeedback'), icon: HeartHandshake },
           { to: '/facility/reports', label: t('navReports'), icon: BarChart3 },
         ];
 
@@ -91,6 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
           { to: '/district/facilities', label: t('navFacilities'), icon: Building2 },
           { to: '/district/referrals', label: t('navReferrals'), icon: ArrowRightLeft },
           { to: '/district/medicines', label: t('navMedicines'), icon: Package },
+          { to: '/district/feedback', label: t('navFeedback'), icon: HeartHandshake },
           { to: '/district/quality', label: t('navQuality'), icon: ShieldCheck },
           { to: '/district/reports', label: t('navReports'), icon: BarChart3 },
         ];
@@ -102,6 +106,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
 
   const menuItems = getMenuItems();
 
+  const getRoleLabel = () => {
+    switch (role) {
+      case 'PATIENT': return t('rolePatient');
+      case 'HEALTH_WORKER': return t('roleHealthWorker');
+      case 'DOCTOR': return t('roleDoctor');
+      case 'FACILITY_ADMIN': return t('roleFacilityAdmin');
+      case 'DISTRICT_ADMIN': return t('roleDistrictAdmin');
+      default: return String(role).replace('_', ' ');
+    }
+  };
+
+
   return (
     <aside className="w-72 bg-white border-r border-slate-200 flex flex-col h-full shadow-sm select-none transition-all duration-200">
       {/* Branding Header */}
@@ -111,8 +127,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
             <HeartPulse className="w-6 h-6 text-emerald-200" />
           </div>
           <div>
-            <h1 className="font-extrabold text-slate-900 text-base leading-tight tracking-tight">Rural Health Connect</h1>
-            <p className="text-xs text-gov-green-700 font-semibold">Govt of Maharashtra</p>
+            <h1 className="font-extrabold text-slate-900 text-base leading-tight tracking-tight">{t('appTitle')}</h1>
+            <p className="text-xs text-gov-green-700 font-semibold">{t('govtMaharashtra')}</p>
           </div>
         </div>
 
@@ -133,7 +149,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
         <div className="text-xs text-gov-green-800 font-bold truncate flex items-center gap-1.5 mt-1">
           <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse shrink-0"></span>
           <span className="bg-emerald-100/80 text-emerald-900 px-2 py-0.5 rounded-full text-[11px]">
-            {currentUser.role.replace('_', ' ')}
+            {getRoleLabel()}
           </span>
         </div>
         {currentUser.facilityName && (
@@ -170,9 +186,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onMobileClose }) => {
 
       {/* Bottom Footer */}
       <div className="p-3.5 border-t border-slate-100 bg-slate-50/60 text-xs text-slate-500 text-center">
-        <div className="font-bold text-slate-700">HealthTech Platform v2.4</div>
-        <div className="text-[11px] text-slate-400 font-medium">SIH 2026 Problem ID: 26133</div>
+        <div className="font-bold text-slate-700">{t('healthTechVersion')}</div>
+        <div className="text-[11px] text-slate-400 font-medium">{t('sihBadge')}</div>
       </div>
     </aside>
   );
 };
+

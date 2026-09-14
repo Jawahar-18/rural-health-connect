@@ -78,9 +78,34 @@ public class FollowUpService {
 
         if (dto.getStatus() != null) {
             f.setStatus(dto.getStatus());
-            if (dto.getStatus() == FollowUpStatus.COMPLETED) {
-                f.setCompletedDate(LocalDate.now());
-            }
+            patientRepository.findById(f.getPatientId()).ifPresent(patient -> {
+                if (dto.getStatus() == FollowUpStatus.COMPLETED) {
+                    f.setCompletedDate(LocalDate.now());
+                    int completed = patient.getConsecutiveFollowupsCompleted() + 1;
+                    patient.setConsecutiveFollowupsCompleted(completed);
+                    patient.setTotalFollowupsAttended(patient.getTotalFollowupsAttended() + 1);
+                    patient.setConsecutiveFollowupsMissed(0);
+
+                    // If patient attended follow-up continuously 5-6 times, auto-archive as treatment completed
+                    if (completed >= 5) {
+                        patient.setArchived(true);
+                        patient.setArchivedReason("Completed continuous follow-up course (" + completed + " consecutive sessions attended)");
+                        patient.setArchivedDate(LocalDate.now());
+                    }
+                } else if (dto.getStatus() == FollowUpStatus.MISSED || dto.getStatus() == FollowUpStatus.CANCELLED) {
+                    int missed = patient.getConsecutiveFollowupsMissed() + 1;
+                    patient.setConsecutiveFollowupsMissed(missed);
+                    patient.setConsecutiveFollowupsCompleted(0);
+
+                    // If patient missed 5-6 continuous follow-ups, auto-archive as chronic drop-out
+                    if (missed >= 5) {
+                        patient.setArchived(true);
+                        patient.setArchivedReason("Continuous follow-up non-attendance (" + missed + " consecutive sessions missed)");
+                        patient.setArchivedDate(LocalDate.now());
+                    }
+                }
+                patientRepository.save(patient);
+            });
         }
         if (dto.getNotes() != null) f.setNotes(dto.getNotes());
         if (dto.getFollowUpDate() != null && !dto.getFollowUpDate().isBlank()) {

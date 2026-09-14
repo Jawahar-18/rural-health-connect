@@ -53,6 +53,15 @@ export interface Patient {
   registeredBy?: string;
   registeredDate: string;
   syncedOffline?: boolean;
+
+  // Archiving & Care Retention (Consecutive Follow-up Tracking)
+  isArchived?: boolean;
+  archivedReason?: string;
+  archivedDate?: string;
+  consecutiveFollowupsCompleted?: number;
+  consecutiveFollowupsMissed?: number;
+  totalFollowupsAttended?: number;
+  lastFeedbackStatus?: string;
 }
 
 export interface Vitals {
@@ -220,4 +229,28 @@ export interface FacilityKPI {
   medicineShortageCount: number;
   diagnosticShortageCount: number;
   highRiskPatientsCount: number;
+}
+
+export type SatisfactionLevel = 'SATISFIED' | 'NEUTRAL' | 'DISSATISFIED';
+export type FeedbackStatus = 'NEW' | 'REVIEWED' | 'ACTION_REQUIRED' | 'RESOLVED';
+
+export interface PatientFeedback {
+  id: string;
+  patientId: string;
+  patientName: string;
+  patientPhone: string;
+  callId?: string;
+  callAttended: boolean;
+  satisfactionLevel: SatisfactionLevel;
+  refusesFollowUp: boolean; // Patient stated: "I will not come"
+  refusalReason?: string;
+  feedbackNotes: string;
+  recordedByUserId?: string;
+  recordedByName?: string;
+  recordedByRole?: string;
+  status: FeedbackStatus;
+  adminReviewNotes?: string;
+  reviewedByAdminId?: string;
+  reviewedAt?: string;
+  createdAt: string;
 }

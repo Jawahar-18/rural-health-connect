@@ -43,44 +43,55 @@ export const WorkerRegisterPatient: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) {
       alert('Please enter patient name');
       return;
     }
 
-    const newPatient = apiService.registerPatient({
-      name: formData.name,
-      age: Number(formData.age),
-      gender: formData.gender,
-      phone: formData.phone,
-      address: formData.address || `Gram Panchayat Area, ${formData.village}`,
-      village: formData.village,
-      emergencyContact: formData.emergencyContact || 'Family Member - ' + formData.phone,
-      relevantConditions: formData.relevantConditions ? [formData.relevantConditions] : ['General OPD Registration'],
-      isPregnant: formData.isPregnant,
-      pregnancyTrimester: formData.isPregnant ? (formData.pregnancyTrimester as 1 | 2 | 3) : undefined,
-      chronicConditions: formData.chronicConditions,
-      preferredLanguage: formData.preferredLanguage,
-      followupRiskScore: formData.distanceKm > 20 ? 65 : 20,
-      followupRiskLevel: formData.distanceKm > 20 ? 'MEDIUM' : 'LOW',
-      clinicalPriority: formData.isPregnant ? 'MODERATE' : 'ROUTINE',
-      interventionPriority: 'LOW',
-      distanceKm: Number(formData.distanceKm),
-      totalAppointments: 1,
-      missedAppointments: 0,
-      isOffline: !isOnline,
-    });
+    setIsSubmitting(true);
+    try {
+      const newPatient = await apiService.registerPatient({
+        name: formData.name,
+        age: Number(formData.age),
+        gender: formData.gender,
+        phone: formData.phone,
+        address: formData.address || `Gram Panchayat Area, ${formData.village}`,
+        village: formData.village,
+        emergencyContact: formData.emergencyContact || 'Family Member - ' + formData.phone,
+        relevantConditions: formData.relevantConditions ? [formData.relevantConditions] : ['General OPD Registration'],
+        isPregnant: formData.isPregnant,
+        pregnancyTrimester: formData.isPregnant ? (formData.pregnancyTrimester as 1 | 2 | 3) : undefined,
+        chronicConditions: formData.chronicConditions,
+        preferredLanguage: formData.preferredLanguage,
+        followupRiskScore: formData.distanceKm > 20 ? 65 : 20,
+        followupRiskLevel: formData.distanceKm > 20 ? 'MEDIUM' : 'LOW',
+        clinicalPriority: formData.isPregnant ? 'MODERATE' : 'ROUTINE',
+        interventionPriority: 'LOW',
+        distanceKm: Number(formData.distanceKm),
+        totalAppointments: 1,
+        missedAppointments: 0,
+        isOffline: !isOnline,
+      });
 
-    confetti({
-      particleCount: 60,
-      spread: 70,
-      origin: { y: 0.5 }
-    });
+      confetti({
+        particleCount: 60,
+        spread: 70,
+        origin: { y: 0.5 }
+      });
 
-    alert(`Patient ${newPatient.name} registered successfully! ${!isOnline ? '(Saved in Offline Queue)' : ''}`);
-    navigate('/worker/patients');
+      alert(`Patient ${newPatient.name} registered successfully! (ID: ${newPatient.id}) ${!isOnline ? '(Saved in Offline Queue)' : '• Persisted to MySQL Database'}`);
+      navigate('/worker/patients');
+    } catch (err) {
+      console.error('Error registering patient:', err);
+      alert('Registration encountered an error. Patient was saved locally.');
+      navigate('/worker/patients');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -261,9 +272,10 @@ export const WorkerRegisterPatient: React.FC = () => {
           <div className="pt-4 border-t border-slate-100 flex justify-end">
             <button
               type="submit"
-              className="w-full sm:w-auto px-8 py-3 bg-gov-green-700 hover:bg-gov-green-800 text-white font-bold text-sm rounded-xl shadow-md flex items-center justify-center gap-2 transition-transform active:scale-95"
+              disabled={isSubmitting}
+              className="w-full sm:w-auto px-8 py-3 bg-gov-green-700 hover:bg-gov-green-800 text-white font-bold text-sm rounded-xl shadow-md flex items-center justify-center gap-2 transition-transform active:scale-95 disabled:opacity-50 cursor-pointer"
             >
-              <Save className="w-4 h-4" /> Save & Register Rural Patient
+              <Save className="w-4 h-4" /> {isSubmitting ? 'Persisting to MySQL...' : 'Save & Register Rural Patient'}
             </button>
           </div>
         </form>

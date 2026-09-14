@@ -58,6 +58,13 @@ public class EntityDtoMapper {
         dto.setRegisteredDate(p.getRegisteredDate() != null ? p.getRegisteredDate().toString() : null);
         dto.setRegisteredBy(p.getRegisteredBy());
         dto.setSyncedOffline(p.isSyncedOffline());
+        dto.setArchived(p.isArchived());
+        dto.setArchivedReason(p.getArchivedReason());
+        dto.setArchivedDate(p.getArchivedDate() != null ? p.getArchivedDate().toString() : null);
+        dto.setConsecutiveFollowupsCompleted(p.getConsecutiveFollowupsCompleted() != null ? p.getConsecutiveFollowupsCompleted() : 0);
+        dto.setConsecutiveFollowupsMissed(p.getConsecutiveFollowupsMissed() != null ? p.getConsecutiveFollowupsMissed() : 0);
+        dto.setTotalFollowupsAttended(p.getTotalFollowupsAttended() != null ? p.getTotalFollowupsAttended() : 0);
+        dto.setLastFeedbackStatus(p.getLastFeedbackStatus());
         return dto;
     }
 
@@ -223,6 +230,30 @@ public class EntityDtoMapper {
         dto.setFacilityName(u.getFacilityName());
         dto.setDistrict(u.getDistrict());
         dto.setPreferredLanguage(u.getPreferredLanguage());
+        return dto;
+    }
+
+    public FeedbackDto toFeedbackDto(PatientFeedback f) {
+        if (f == null) return null;
+        FeedbackDto dto = new FeedbackDto();
+        dto.setId(f.getId());
+        dto.setPatientId(f.getPatientId());
+        dto.setPatientName(f.getPatientName());
+        dto.setPatientPhone(f.getPatientPhone());
+        dto.setCallId(f.getCallId());
+        dto.setCallAttended(f.isCallAttended());
+        dto.setSatisfactionLevel(f.getSatisfactionLevel());
+        dto.setRefusesFollowUp(f.isRefusesFollowUp());
+        dto.setRefusalReason(f.getRefusalReason());
+        dto.setFeedbackNotes(f.getFeedbackNotes());
+        dto.setRecordedByUserId(f.getRecordedByUserId());
+        dto.setRecordedByName(f.getRecordedByName());
+        dto.setRecordedByRole(f.getRecordedByRole());
+        dto.setStatus(f.getStatus());
+        dto.setAdminReviewNotes(f.getAdminReviewNotes());
+        dto.setReviewedByAdminId(f.getReviewedByAdminId());
+        dto.setReviewedAt(f.getReviewedAt());
+        dto.setCreatedAt(f.getCreatedAt());
         return dto;
     }
 }

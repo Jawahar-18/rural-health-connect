@@ -102,6 +102,16 @@ public class Patient {
 
     private boolean syncedOffline = false;
 
+    private boolean isArchived = false;
+    @Column(length = 255)
+    private String archivedReason;
+    private LocalDate archivedDate;
+    private Integer consecutiveFollowupsCompleted = 0;
+    private Integer consecutiveFollowupsMissed = 0;
+    private Integer totalFollowupsAttended = 0;
+    @Column(length = 64)
+    private String lastFeedbackStatus;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -221,4 +231,25 @@ public class Patient {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public boolean isArchived() { return isArchived; }
+    public void setArchived(boolean archived) { isArchived = archived; }
+
+    public String getArchivedReason() { return archivedReason; }
+    public void setArchivedReason(String archivedReason) { this.archivedReason = archivedReason; }
+
+    public LocalDate getArchivedDate() { return archivedDate; }
+    public void setArchivedDate(LocalDate archivedDate) { this.archivedDate = archivedDate; }
+
+    public Integer getConsecutiveFollowupsCompleted() { return consecutiveFollowupsCompleted != null ? consecutiveFollowupsCompleted : 0; }
+    public void setConsecutiveFollowupsCompleted(Integer consecutiveFollowupsCompleted) { this.consecutiveFollowupsCompleted = consecutiveFollowupsCompleted; }
+
+    public Integer getConsecutiveFollowupsMissed() { return consecutiveFollowupsMissed != null ? consecutiveFollowupsMissed : 0; }
+    public void setConsecutiveFollowupsMissed(Integer consecutiveFollowupsMissed) { this.consecutiveFollowupsMissed = consecutiveFollowupsMissed; }
+
+    public Integer getTotalFollowupsAttended() { return totalFollowupsAttended != null ? totalFollowupsAttended : 0; }
+    public void setTotalFollowupsAttended(Integer totalFollowupsAttended) { this.totalFollowupsAttended = totalFollowupsAttended; }
+
+    public String getLastFeedbackStatus() { return lastFeedbackStatus; }
+    public void setLastFeedbackStatus(String lastFeedbackStatus) { this.lastFeedbackStatus = lastFeedbackStatus; }
 }
