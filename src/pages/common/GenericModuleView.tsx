@@ -80,6 +80,21 @@ export const GenericModuleView: React.FC<GenericModuleViewProps> = ({ title, rol
     p.village.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredReferrals = referrals.filter(r => 
+    r.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.destinationFacility.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.originFacility.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.reason.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.status.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredStock = stock.filter(s =>
+    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.status.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const getRoleGradient = () => {
     switch (role) {
       case 'HEALTH_WORKER': return 'from-emerald-900 via-teal-900 to-slate-900 border-emerald-700/50';
@@ -129,27 +144,33 @@ export const GenericModuleView: React.FC<GenericModuleViewProps> = ({ title, rol
           <div className="flex items-center justify-between border-b-2 border-slate-100 pb-3">
             <h2 className="font-extrabold text-slate-900 text-base">{t('referralContinuityTracking')}</h2>
             <span className="text-xs font-bold px-3 py-1 bg-purple-100 text-purple-900 rounded-full border border-purple-300">
-              {referrals.length} {t('activeReferrals')}
+              {filteredReferrals.length} {t('activeReferrals')}
             </span>
           </div>
 
           <div className="space-y-4 text-xs sm:text-sm">
-            {referrals.map((ref) => (
-              <div key={ref.id} className="p-5 rounded-2xl border-2 border-slate-200/90 bg-slate-50/70 hover:bg-white hover:border-purple-400 shadow-sm hover:shadow-lg transition-all duration-200 space-y-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="font-extrabold text-slate-900 text-base">{ref.patientName} <span className="text-xs font-semibold text-slate-500">({ref.patientGender}, {ref.patientAge} yrs)</span></div>
-                  <span className="bg-purple-100 text-purple-900 text-xs font-black px-3 py-1 rounded-full border-2 border-purple-300 shadow-xs">
-                    {t('status')}: {ref.status.replace(/_/g, ' ')}
-                  </span>
-                </div>
-                <div className="text-slate-700 font-medium">
-                  {t('origin')}: <strong className="text-slate-900">{ref.originFacility}</strong> → {t('destination')}: <strong className="text-purple-800 font-bold">{ref.destinationFacility}</strong> ({ref.department})
-                </div>
-                <div className="text-slate-600 bg-white p-3 rounded-xl border-2 border-slate-100 text-xs font-medium">
-                  {t('reasonForReferral')}: {ref.reason}
-                </div>
+            {filteredReferrals.length === 0 ? (
+              <div className="text-center py-8 text-xs font-semibold text-slate-400">
+                No referrals matching "{searchTerm}"
               </div>
-            ))}
+            ) : (
+              filteredReferrals.map((ref) => (
+                <div key={ref.id} className="p-5 rounded-2xl border-2 border-slate-200/90 bg-slate-50/70 hover:bg-white hover:border-purple-400 shadow-sm hover:shadow-lg transition-all duration-200 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="font-extrabold text-slate-900 text-base">{ref.patientName} <span className="text-xs font-semibold text-slate-500">({ref.patientGender}, {ref.patientAge} yrs)</span></div>
+                    <span className="bg-purple-100 text-purple-900 text-xs font-black px-3 py-1 rounded-full border-2 border-purple-300 shadow-xs">
+                      {t('status')}: {ref.status.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                  <div className="text-slate-700 font-medium">
+                    {t('origin')}: <strong className="text-slate-900">{ref.originFacility}</strong> → {t('destination')}: <strong className="text-purple-800 font-bold">{ref.destinationFacility}</strong> ({ref.department})
+                  </div>
+                  <div className="text-slate-600 bg-white p-3 rounded-xl border-2 border-slate-100 text-xs font-medium">
+                    {t('reasonForReferral')}: {ref.reason}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       ) : title.toLowerCase().includes('medicine') || title.toLowerCase().includes('stock') ? (
@@ -158,7 +179,7 @@ export const GenericModuleView: React.FC<GenericModuleViewProps> = ({ title, rol
           <div className="flex items-center justify-between border-b-2 border-slate-100 pb-3">
             <h2 className="font-extrabold text-slate-900 text-base">{t('essentialDrugInventory')}</h2>
             <span className="text-xs font-bold px-3 py-1 bg-emerald-100 text-emerald-900 rounded-full border border-emerald-300">
-              {stock.length} {t('cataloguedDrugs')}
+              {filteredStock.length} {t('cataloguedDrugs')}
             </span>
           </div>
 
@@ -174,7 +195,7 @@ export const GenericModuleView: React.FC<GenericModuleViewProps> = ({ title, rol
                 </tr>
               </thead>
               <tbody className="divide-y-2 divide-slate-100 font-medium text-slate-800 bg-white">
-                {stock.map((item) => (
+                {filteredStock.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-50/90 transition-colors">
                     <td className="p-3.5 font-bold text-slate-900">{item.name}</td>
                     <td className="p-3.5 text-slate-600 font-semibold">{item.category}</td>

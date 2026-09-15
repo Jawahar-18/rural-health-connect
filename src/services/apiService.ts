@@ -10,7 +10,9 @@ import type {
   ReferralStatus,
   AppointmentStatus,
   PatientFeedback,
-  FeedbackStatus
+  FeedbackStatus,
+  NotificationItem,
+  UserRole
 } from '../types';
 
 import { 
@@ -21,7 +23,9 @@ import {
   INITIAL_MEDICINE_STOCK, 
   INITIAL_DIAGNOSTICS, 
   DISTRICT_FACILITY_KPIS,
-  INITIAL_FEEDBACKS
+  INITIAL_FEEDBACKS,
+  INITIAL_NOTIFICATIONS,
+  INITIAL_TRIAGE_RECORDS
 } from '../data/mockData';
 
 // API Base URL for Java Spring Boot Backend
@@ -37,6 +41,7 @@ const STORAGE_KEYS = {
   DIAGNOSTICS: 'rhc_diagnostics_v1',
   TRIAGE: 'rhc_triage_v1',
   FEEDBACK: 'rhc_feedback_v1',
+  NOTIFICATIONS: 'rhc_notifications_v1',
   OFFLINE_QUEUE: 'rhc_offline_queue_v1',
   AUTH_TOKEN: 'rhc_jwt_token_v1',
 };
@@ -435,7 +440,7 @@ export const apiService = {
 
   // Triage Records
   saveTriageRecord: (record: Omit<TriageRecord, 'id' | 'date'>): TriageRecord => {
-    const records = loadData<TriageRecord[]>(STORAGE_KEYS.TRIAGE, []);
+    const records = loadData<TriageRecord[]>(STORAGE_KEYS.TRIAGE, INITIAL_TRIAGE_RECORDS);
     const newRecord: TriageRecord = {
       ...record,
       id: `trg-${Date.now().toString().slice(-4)}`,
@@ -467,7 +472,7 @@ export const apiService = {
   },
 
   getTriageRecords: (patientId?: string): TriageRecord[] => {
-    const records = loadData<TriageRecord[]>(STORAGE_KEYS.TRIAGE, []);
+    const records = loadData<TriageRecord[]>(STORAGE_KEYS.TRIAGE, INITIAL_TRIAGE_RECORDS);
     if (patientId) {
       return records.filter(r => r.patientId === patientId);
     }
@@ -743,5 +748,36 @@ export const apiService = {
     }
 
     return apiService.updatePatient(patientId, updates);
+  },
+
+  // Notifications
+  getNotifications: (role?: UserRole): NotificationItem[] => {
+    const list = loadData<NotificationItem[]>(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);
+    if (!role) return list;
+    return list.filter(n => !n.targetRoles || n.targetRoles.length === 0 || n.targetRoles.includes(role));
+  },
+
+  markNotificationRead: (id: string): void => {
+    const list = loadData<NotificationItem[]>(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);
+    const updated = list.map(n => n.id === id ? { ...n, read: true } : n);
+    saveData(STORAGE_KEYS.NOTIFICATIONS, updated);
+    window.dispatchEvent(new CustomEvent('rhc_notifications_updated', { detail: { id } }));
+
+    fetch(`${API_BASE_URL}/notifications/${id}/read`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+    }).catch(err => console.debug('Backend offline, notification read marked locally:', err));
+  },
+
+  markAllNotificationsRead: (role?: UserRole): void => {
+    const list = loadData<NotificationItem[]>(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);
+    const updated = list.map(n => {
+      if (!role || !n.targetRoles || n.targetRoles.includes(role)) {
+        return { ...n, read: true };
+      }
+      return n;
+    });
+    saveData(STORAGE_KEYS.NOTIFICATIONS, updated);
+    window.dispatchEvent(new CustomEvent('rhc_notifications_updated', { detail: { all: true } }));
   }
 };
