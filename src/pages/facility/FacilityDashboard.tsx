@@ -39,46 +39,46 @@ export const FacilityDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6 font-sans">
-      {/* Header - Rich Gradient */}
-      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-indigo-950 via-purple-900 to-slate-900 text-white shadow-xl border-2 border-purple-700/50 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+      {/* Header - Unified Lush Mint & Teal Gradient */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-teal-600 via-emerald-600 to-teal-700 text-white shadow-lg shadow-teal-900/10 border border-teal-400/40 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
 
         <div className="relative z-10 space-y-1.5">
-          <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md text-purple-200 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-white/20 shadow-inner">
-            <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse"></span>
+          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-white/30 shadow-inner">
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
             {t('facilityPortalTag')}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">{kpiData.facilityName} {t('dashboard')}</h1>
-          <p className="text-xs sm:text-sm text-purple-200 font-medium">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight drop-shadow-xs">{kpiData.facilityName} {t('dashboard')}</h1>
+          <p className="text-xs sm:text-sm text-teal-50 font-medium">
             {t('region')}: <strong className="text-white">{kpiData.district}</strong> • {t('appSubtitle')}
           </p>
         </div>
       </div>
 
-      {/* 8 Operational KPIs Grid - Bold Borders & Deep Shadows */}
+      {/* 8 Operational KPIs Grid - Smooth & Light Refined Shadows */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-3xl border-2 border-slate-200/90 hover:border-indigo-400 shadow-md hover:shadow-xl transition-all duration-200">
+        <div className="bg-white p-5 rounded-3xl border border-slate-200/80 hover:border-indigo-300 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
           <div className="text-xs font-black text-slate-500 uppercase tracking-wider">{t('totalPatientsToday')}</div>
           <div className="text-3xl font-black text-slate-900 mt-2">{kpiData.totalPatientsToday}</div>
           <div className="text-xs text-emerald-700 font-bold mt-1">↑ 12% vs last week</div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border-2 border-slate-200/90 hover:border-indigo-400 shadow-md hover:shadow-xl transition-all duration-200">
+        <div className="bg-white p-5 rounded-3xl border border-slate-200/80 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
           <div className="text-xs font-black text-slate-500 uppercase tracking-wider">{t('avgWaitTime')}</div>
           <div className="text-3xl font-black text-slate-900 mt-2">{kpiData.avgWaitingTimeMinutes} <span className="text-sm font-semibold text-slate-500">mins</span></div>
           <div className="text-xs text-emerald-700 font-bold mt-1">{t('withinTarget')}</div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border-2 border-purple-300 hover:border-purple-500 bg-purple-50/20 shadow-md hover:shadow-xl transition-all duration-200">
-          <div className="text-xs font-black text-purple-700 uppercase tracking-wider">{t('referralCompletionRate')}</div>
-          <div className="text-3xl font-black text-purple-600 mt-2">{kpiData.referralCompletionRate}%</div>
-          <div className="text-xs text-purple-800 font-bold mt-1">Target: &gt;85% (Optimal)</div>
+        <div className="bg-gradient-to-br from-white to-emerald-50/40 p-5 rounded-3xl border border-emerald-200/80 hover:border-emerald-400 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+          <div className="text-xs font-black text-emerald-800 uppercase tracking-wider">{t('referralCompletionRate')}</div>
+          <div className="text-3xl font-black text-emerald-700 mt-2">{kpiData.referralCompletionRate}%</div>
+          <div className="text-xs text-emerald-700 font-bold mt-1">Target: &gt;85% (Optimal)</div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border-2 border-rose-300 hover:border-rose-500 bg-rose-50/20 shadow-md hover:shadow-xl transition-all duration-200">
+        <div className="bg-gradient-to-br from-white to-rose-50/40 p-5 rounded-3xl border border-rose-200/80 hover:border-rose-400 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
           <div className="text-xs font-black text-rose-700 uppercase tracking-wider">{t('medicineShortages')}</div>
           <div className="text-3xl font-black text-rose-600 mt-2">{kpiData.medicineShortageCount}</div>
-          <div className="text-xs text-rose-800 font-bold mt-1">{t('reorderRequired')}</div>
+          <div className="text-xs text-rose-700 font-bold mt-1">{t('reorderRequired')}</div>
         </div>
       </div>
 

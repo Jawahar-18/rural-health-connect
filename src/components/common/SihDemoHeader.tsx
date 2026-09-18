@@ -46,7 +46,7 @@ export const SihDemoHeader: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-900 text-white text-xs py-2 px-3 sm:px-6 flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 shadow-md">
+    <div className="bg-slate-800/95 backdrop-blur-md text-slate-100 text-xs py-2 px-3 sm:px-6 flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/60 shadow-xs">
       {/* Left: Branding & SIH Tag */}
       <div className="flex items-center gap-2">
         <span className="bg-gov-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">

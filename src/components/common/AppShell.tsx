@@ -191,10 +191,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
                 {/* Notifications Dropdown Panel */}
                 {notificationsOpen && (
-                  <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border-2 border-slate-200 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="p-4 bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 text-white flex items-center justify-between">
+                  <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-xl border border-slate-200/80 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="p-4 bg-gradient-to-r from-teal-700 via-emerald-700 to-cyan-800 text-white flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Bell className="w-4 h-4 text-emerald-400" />
+                        <Bell className="w-4 h-4 text-emerald-200" />
                         <span className="font-extrabold text-sm tracking-tight">Notifications</span>
                         {unreadCount > 0 && (
                           <span className="text-[10px] font-black bg-rose-500 text-white px-2 py-0.5 rounded-full">

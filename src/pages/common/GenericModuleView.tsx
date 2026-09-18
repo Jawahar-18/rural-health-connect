@@ -96,23 +96,16 @@ export const GenericModuleView: React.FC<GenericModuleViewProps> = ({ title, rol
   );
 
   const getRoleGradient = () => {
-    switch (role) {
-      case 'HEALTH_WORKER': return 'from-emerald-900 via-teal-900 to-slate-900 border-emerald-700/50';
-      case 'DOCTOR': return 'from-blue-950 via-indigo-900 to-slate-900 border-indigo-700/50';
-      case 'FACILITY_ADMIN': return 'from-indigo-950 via-purple-900 to-slate-900 border-purple-700/50';
-      case 'DISTRICT_ADMIN': return 'from-slate-950 via-teal-950 to-slate-900 border-teal-700/50';
-      case 'PATIENT': return 'from-teal-900 via-emerald-900 to-slate-900 border-emerald-700/50';
-      default: return 'from-slate-900 via-emerald-950 to-slate-900 border-emerald-800/50';
-    }
+    return 'from-teal-600 via-emerald-600 to-teal-700 border-teal-400/40';
   };
 
   return (
     <div className="space-y-6 font-sans">
       {/* Colorful Gradient Module Header */}
-      <div className={`p-6 sm:p-7 rounded-3xl bg-gradient-to-r ${getRoleGradient()} text-white shadow-xl border-2 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5`}>
+      <div className={`p-6 sm:p-7 rounded-3xl bg-gradient-to-r ${getRoleGradient()} text-white shadow-lg border relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5`}>
         {/* Background decorative ambient glow */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
-        <div className="absolute bottom-0 left-1/3 w-60 h-60 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+        <div className="absolute bottom-0 left-1/3 w-60 h-60 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
 
         <div className="relative z-10 space-y-1.5">
           <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md text-emerald-200 text-xs font-bold px-3 py-1 rounded-full border border-white/20 uppercase tracking-wider shadow-inner">

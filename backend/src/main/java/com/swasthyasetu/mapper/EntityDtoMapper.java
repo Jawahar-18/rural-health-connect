@@ -172,6 +172,8 @@ public class EntityDtoMapper {
                 itemDto.setDurationDays(it.getDurationDays() != null ? it.getDurationDays() : 5);
                 itemDto.setInstructions(it.getInstructions());
                 itemDto.setInStock(it.isInStock());
+                itemDto.setDescription(it.getDescription());
+                itemDto.setPurpose(it.getPurpose());
                 return itemDto;
             }).collect(Collectors.toList());
             dto.setItems(itemDtos);

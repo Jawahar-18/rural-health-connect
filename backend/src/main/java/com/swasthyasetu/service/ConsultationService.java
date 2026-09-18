@@ -89,6 +89,8 @@ public class ConsultationService {
                 item.setDurationDays(itemDto.getDurationDays());
                 item.setInstructions(itemDto.getInstructions());
                 item.setInStock(itemDto.isInStock());
+                item.setDescription(itemDto.getDescription());
+                item.setPurpose(itemDto.getPurpose());
                 rx.addItem(item);
             }
         }

@@ -35,6 +35,12 @@ public class PrescriptionItem {
 
     private boolean inStock = true;
 
+    @Column(length = 500)
+    private String description;
+
+    @Column(length = 500)
+    private String purpose;
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -61,4 +67,10 @@ public class PrescriptionItem {
 
     public boolean isInStock() { return inStock; }
     public void setInStock(boolean inStock) { this.inStock = inStock; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getPurpose() { return purpose; }
+    public void setPurpose(String purpose) { this.purpose = purpose; }
 }

@@ -166,6 +166,10 @@ export interface PrescriptionItem {
   durationDays: number;
   instructions?: string;
   inStock?: boolean;
+  description?: string;        // "What is this drug?" (Layman explanation)
+  purpose?: string;            // "Why is it used for?" (Plain language benefit)
+  howItWorks?: string;         // Simple body mechanism
+  sideEffectsNote?: string;    // Everyday precautions & intake instructions
 }
 
 export interface Prescription {
@@ -193,6 +197,8 @@ export interface MedicineStock {
   expiryDate: string;
   facilityId: string;
   facilityName: string;
+  description?: string;        // "What is this drug?"
+  purpose?: string;            // "Why is it used for?"
 }
 
 export interface DiagnosticEquipment {

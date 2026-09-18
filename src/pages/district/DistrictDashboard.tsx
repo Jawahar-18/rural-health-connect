@@ -62,16 +62,16 @@ export const DistrictDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6 font-sans">
-      {/* Header - Rich Gradient */}
-      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-amber-950 via-slate-900 to-teal-950 text-white shadow-xl border-2 border-amber-700/50 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+      {/* Header - Unified Lush Mint & Teal Gradient */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-teal-600 via-emerald-600 to-teal-700 text-white shadow-lg shadow-teal-900/10 border border-teal-400/40 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
 
         <div className="relative z-10 space-y-1.5">
-          <span className="bg-white/15 backdrop-blur-md text-amber-200 text-xs font-black px-3 py-1 rounded-full uppercase border border-white/20 shadow-inner">
+          <span className="bg-white/20 backdrop-blur-md text-white text-xs font-black px-3 py-1 rounded-full uppercase border border-white/30 shadow-inner">
             {t('districtPortalTag')}
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight mt-1">{t('districtHqTitle')}</h1>
-          <p className="text-xs sm:text-sm text-amber-100 font-medium">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight mt-1 drop-shadow-xs">{t('districtHqTitle')}</h1>
+          <p className="text-xs sm:text-sm text-teal-50 font-medium">
             {t('appSubtitle')}
           </p>
         </div>
@@ -79,51 +79,51 @@ export const DistrictDashboard: React.FC = () => {
         <button
           onClick={handleExportPDF}
           disabled={isExporting}
-          className="relative z-10 px-5 py-3 bg-amber-500 hover:bg-amber-400 disabled:bg-amber-600 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-lg flex items-center gap-2 hover:scale-102 active:scale-95 transition-all cursor-pointer"
+          className="relative z-10 px-5 py-3 bg-white hover:bg-teal-50 disabled:bg-slate-100 text-teal-950 font-black text-xs sm:text-sm rounded-2xl shadow-sm hover:shadow-md flex items-center gap-2 hover:scale-102 active:scale-95 transition-all cursor-pointer"
         >
           {isExporting ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin text-teal-700" />
               <span>Generating PDF...</span>
             </>
           ) : downloadSuccess ? (
             <>
-              <CheckCircle2 className="w-4 h-4 text-emerald-950" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-700" />
               <span>Downloaded PDF!</span>
             </>
           ) : (
             <>
-              <FileSpreadsheet className="w-4 h-4" />
+              <FileSpreadsheet className="w-4 h-4 text-amber-700" />
               <span>{t('exportQualityReport')}</span>
             </>
           )}
         </button>
       </div>
 
-      {/* 8 District Level KPIs - Bold 2px Borders & Deep Shadows */}
+      {/* 8 District Level KPIs - Smooth & Light Refined Shadows */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-3xl border-2 border-slate-200/90 hover:border-amber-400 shadow-md hover:shadow-xl transition-all duration-200">
+        <div className="bg-white p-5 rounded-3xl border border-slate-200/80 hover:border-amber-400 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
           <div className="text-xs font-black text-slate-500 uppercase tracking-wider">{t('totalFacilities')}</div>
           <div className="text-3xl font-black text-slate-900 mt-2">{facilities.length}</div>
           <div className="text-xs text-emerald-700 font-bold mt-1">Pune District Sector</div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border-2 border-slate-200/90 hover:border-amber-400 shadow-md hover:shadow-xl transition-all duration-200">
+        <div className="bg-white p-5 rounded-3xl border border-slate-200/80 hover:border-amber-400 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
           <div className="text-xs font-black text-slate-500 uppercase tracking-wider">{t('totalPatientsToday')}</div>
           <div className="text-3xl font-black text-slate-900 mt-2">{totalPatients}</div>
           <div className="text-xs text-emerald-700 font-bold mt-1">Across 5 Facilities</div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border-2 border-purple-300 hover:border-purple-500 bg-purple-50/20 shadow-md hover:shadow-xl transition-all duration-200">
+        <div className="bg-gradient-to-br from-white to-purple-50/40 p-5 rounded-3xl border border-purple-200/80 hover:border-purple-400 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
           <div className="text-xs font-black text-purple-700 uppercase tracking-wider">{t('avgReferralRate')}</div>
           <div className="text-3xl font-black text-purple-600 mt-2">{avgReferralComp}%</div>
-          <div className="text-xs text-purple-800 font-bold mt-1">{t('districtBenchmark')}</div>
+          <div className="text-xs text-purple-700 font-bold mt-1">{t('districtBenchmark')}</div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border-2 border-rose-300 hover:border-rose-500 bg-rose-50/20 shadow-md hover:shadow-xl transition-all duration-200">
+        <div className="bg-gradient-to-br from-white to-rose-50/40 p-5 rounded-3xl border border-rose-200/80 hover:border-rose-400 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
           <div className="text-xs font-black text-rose-700 uppercase tracking-wider">{t('totalHighRiskCohort')}</div>
           <div className="text-3xl font-black text-rose-600 mt-2">{totalHighRisk}</div>
-          <div className="text-xs text-rose-800 font-bold mt-1">{t('proactiveTracking')}</div>
+          <div className="text-xs text-rose-700 font-bold mt-1">{t('proactiveTracking')}</div>
         </div>
       </div>
 

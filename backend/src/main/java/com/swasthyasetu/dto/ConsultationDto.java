@@ -58,6 +58,8 @@ public class ConsultationDto {
         private int durationDays = 5;
         private String instructions;
         private boolean inStock = true;
+        private String description;
+        private String purpose;
 
         public String getMedicineName() { return medicineName; }
         public void setMedicineName(String medicineName) { this.medicineName = medicineName; }
@@ -76,6 +78,12 @@ public class ConsultationDto {
 
         public boolean isInStock() { return inStock; }
         public void setInStock(boolean inStock) { this.inStock = inStock; }
+
+        public String getDescription() { return description; }
+        public void setDescription(String description) { this.description = description; }
+
+        public String getPurpose() { return purpose; }
+        public void setPurpose(String purpose) { this.purpose = purpose; }
     }
 
     public static class PrescriptionDto {

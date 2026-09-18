@@ -57,12 +57,12 @@ export const PatientFeedbackModal: React.FC<PatientFeedbackModalProps> = ({
       <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         
         {/* Header */}
-        <div className="bg-gradient-to-r from-teal-900 to-slate-900 text-white p-5 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-teal-600 via-emerald-600 to-teal-700 text-white p-5 flex items-center justify-between border-b border-teal-400/30">
           <div className="flex items-center gap-2.5">
-            <MessageSquare className="w-5 h-5 text-teal-300" />
+            <MessageSquare className="w-5 h-5 text-emerald-200" />
             <div>
               <h3 className="font-extrabold text-base">Treatment & Doctor Feedback</h3>
-              <p className="text-xs text-teal-200">Share your experience with PHC treatment</p>
+              <p className="text-xs text-teal-50">Share your experience with PHC treatment</p>
             </div>
           </div>
           <button 

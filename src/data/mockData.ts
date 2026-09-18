@@ -387,8 +387,28 @@ export const INITIAL_PRESCRIPTIONS: Prescription[] = [
     diagnosis: 'Essential Hypertension (Controlled)',
     clinicalNotes: 'BP 128/82 mmHg. Patient compliant with sodium restriction advice.',
     items: [
-      { medicineName: 'Tab. Amlodipine 5mg', dosage: '5 mg', frequency: '1-0-0 (Morning after breakfast)', durationDays: 30, inStock: true },
-      { medicineName: 'Tab. Paracetamol 500mg', dosage: '500 mg', frequency: 'SOS (As needed for headache)', durationDays: 5, inStock: true },
+      { 
+        medicineName: 'Tab. Amlodipine 5mg', 
+        dosage: '5 mg', 
+        frequency: '1-0-0 (Morning after breakfast)', 
+        durationDays: 30, 
+        inStock: true,
+        description: 'Blood pressure medication (calcium channel blocker). It relaxes and widens narrow blood vessels.',
+        purpose: 'Keeps high blood pressure under control to prevent heart attacks, chest pain, and strokes.',
+        howItWorks: 'Relaxes muscular walls of blood vessels so blood flows with ease without straining your heart.',
+        sideEffectsNote: 'Take once daily after morning meal. Do not discontinue suddenly without consulting your doctor.'
+      },
+      { 
+        medicineName: 'Tab. Paracetamol 500mg', 
+        dosage: '500 mg', 
+        frequency: 'SOS (As needed for headache)', 
+        durationDays: 5, 
+        inStock: true,
+        description: 'Safe fever-reducing and pain-relieving tablet for mild to moderate discomfort.',
+        purpose: 'Relieves headache, feverishness, and muscular body ache.',
+        howItWorks: 'Calms pain signals sent to the brain and resets body temperature regulation center.',
+        sideEffectsNote: 'Take with a glass of water after meals. Do not exceed 4 tablets in 24 hours.'
+      },
     ],
     followUpDate: '2026-09-15',
   },
@@ -403,8 +423,28 @@ export const INITIAL_PRESCRIPTIONS: Prescription[] = [
     diagnosis: 'Antenatal Checkup - 2nd Trimester',
     clinicalNotes: 'Fetal heart sound clear (144 bpm). Fundal height corresponds to gestational age.',
     items: [
-      { medicineName: 'Tab. Iron & Folic Acid (IFA)', dosage: '100mg Iron + 500mcg FA', frequency: '0-1-0 (After lunch)', durationDays: 60, inStock: true },
-      { medicineName: 'Tab. Calcium Carbonate 500mg', dosage: '500 mg', frequency: '1-0-0 (After breakfast)', durationDays: 60, inStock: true },
+      { 
+        medicineName: 'Tab. Iron & Folic Acid (IFA)', 
+        dosage: '100mg Iron + 500mcg FA', 
+        frequency: '0-1-0 (After lunch)', 
+        durationDays: 60, 
+        inStock: true,
+        description: 'Vital nutritional red tablet packed with iron minerals and folic acid vitamins.',
+        purpose: 'Treats and prevents anemia (lack of blood), relieves mother\'s weakness, and builds healthy baby brain & spinal cord.',
+        howItWorks: 'Supplies raw materials to bone marrow to manufacture healthy red blood cells and hemoglobin.',
+        sideEffectsNote: 'Take with lemon water or plain water after food. Stool turning dark is completely harmless.'
+      },
+      { 
+        medicineName: 'Tab. Calcium Carbonate 500mg', 
+        dosage: '500 mg', 
+        frequency: '1-0-0 (After breakfast)', 
+        durationDays: 60, 
+        inStock: true,
+        description: 'Essential mineral supplement that nourishes bones and strengthens teeth.',
+        purpose: 'Strengthens mother\'s bones and ensures strong bone and tooth development for growing baby.',
+        howItWorks: 'Directly absorbs into bone matrix to keep bones dense and prevent calcium leaching.',
+        sideEffectsNote: 'Take in morning after food. Keep 2 hours gap between this and Iron tablet.'
+      },
     ],
     followUpDate: '2026-09-01',
   },
@@ -422,6 +462,8 @@ export const INITIAL_MEDICINE_STOCK: MedicineStock[] = [
     expiryDate: '2027-06-30',
     facilityId: 'fac-phc-junnar',
     facilityName: 'PHC Junnar, Pune',
+    description: 'High blood pressure control tablet. Relaxes blood vessels.',
+    purpose: 'Lowers high blood pressure and protects heart and kidneys from damage.',
   },
   {
     id: 'med-502',
@@ -434,6 +476,8 @@ export const INITIAL_MEDICINE_STOCK: MedicineStock[] = [
     expiryDate: '2027-03-15',
     facilityId: 'fac-phc-junnar',
     facilityName: 'PHC Junnar, Pune',
+    description: 'Blood sugar (diabetes) regulating tablet.',
+    purpose: 'Keeps blood sugar levels normal and prevents diabetic complications.',
   },
   {
     id: 'med-503',
@@ -446,6 +490,8 @@ export const INITIAL_MEDICINE_STOCK: MedicineStock[] = [
     expiryDate: '2027-11-20',
     facilityId: 'fac-phc-junnar',
     facilityName: 'PHC Junnar, Pune',
+    description: 'Blood-building iron and vitamin supplement.',
+    purpose: 'Cures anemia (blood deficiency) and supports healthy pregnancy.',
   },
   {
     id: 'med-504',
@@ -458,6 +504,8 @@ export const INITIAL_MEDICINE_STOCK: MedicineStock[] = [
     expiryDate: '2027-01-10',
     facilityId: 'fac-phc-junnar',
     facilityName: 'PHC Junnar, Pune',
+    description: 'Life-saving emergency snakebite antidote injection.',
+    purpose: 'Neutralizes toxic venom from cobra, krait, Russell\'s viper, and saw-scaled viper.',
   },
   {
     id: 'med-505',
@@ -470,6 +518,8 @@ export const INITIAL_MEDICINE_STOCK: MedicineStock[] = [
     expiryDate: '2026-12-31',
     facilityId: 'fac-phc-junnar',
     facilityName: 'PHC Junnar, Pune',
+    description: 'Broad-spectrum antibacterial antibiotic medicine.',
+    purpose: 'Clears throat infections, chest congestion, ear infections, and skin wounds.',
   },
   {
     id: 'med-506',
@@ -482,6 +532,8 @@ export const INITIAL_MEDICINE_STOCK: MedicineStock[] = [
     expiryDate: '2027-08-15',
     facilityId: 'fac-phc-junnar',
     facilityName: 'PHC Junnar, Pune',
+    description: 'Vital hydration electrolyte salt sachet.',
+    purpose: 'Treats dehydration and prevents weakness from diarrhea, vomiting, or summer heat.',
   },
 ];
 

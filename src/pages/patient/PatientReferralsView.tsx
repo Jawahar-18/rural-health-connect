@@ -16,8 +16,8 @@ export const PatientReferralsView: React.FC = () => {
   return (
     <div className="space-y-6 font-sans">
       {/* Header Banner */}
-      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-teal-900 via-emerald-900 to-slate-900 text-white shadow-xl border-2 border-emerald-700/50 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-teal-600 via-emerald-600 to-teal-700 text-white shadow-lg border border-teal-400/40 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
 
         <div className="relative z-10 space-y-1.5">
           <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md text-emerald-200 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-white/20 shadow-inner">
@@ -61,36 +61,36 @@ export const PatientReferralsView: React.FC = () => {
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b-2 border-slate-100">
                 <div>
-                  <span className="text-xs font-black uppercase tracking-wider text-purple-900 bg-purple-100 px-3 py-1 rounded-full border border-purple-300">
+                  <span className="text-xs font-black uppercase tracking-wider text-emerald-900 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
                     REFERRAL PASS #{ref.id.toUpperCase()}
                   </span>
                   <div className="text-xl font-black text-slate-900 mt-2">
                     {ref.destinationFacility}
                   </div>
-                  <div className="text-xs font-semibold text-purple-700">{ref.department}</div>
+                  <div className="text-xs font-semibold text-emerald-700">{ref.department}</div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-100 text-purple-900 border border-purple-300">
+                  <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-900 border border-emerald-300">
                     Status: {ref.status.replace(/_/g, ' ')}
                   </span>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl bg-slate-50 border-2 border-slate-100 space-y-2 text-xs">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
                   <div className="font-bold text-slate-500">Route Details</div>
                   <div className="font-semibold text-slate-800">
                     Origin: <strong className="text-slate-900">{ref.originFacility}</strong>
                   </div>
                   <div className="font-semibold text-slate-800">
-                    Destination: <strong className="text-purple-900">{ref.destinationFacility}</strong>
+                    Destination: <strong className="text-emerald-900">{ref.destinationFacility}</strong>
                   </div>
                   <div className="text-slate-500 pt-1">Created Date: {ref.createdDate}</div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-purple-50/70 border-2 border-purple-200 space-y-2 text-xs">
-                  <div className="font-bold text-purple-900">Clinical Reason for Specialist Referral</div>
+                <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-2 text-xs">
+                  <div className="font-bold text-emerald-900">Clinical Reason for Specialist Referral</div>
                   <p className="text-slate-800 font-medium">{ref.reason}</p>
                 </div>
               </div>

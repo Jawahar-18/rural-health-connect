@@ -27,6 +27,7 @@ import {
   INITIAL_NOTIFICATIONS,
   INITIAL_TRIAGE_RECORDS
 } from '../data/mockData';
+import { findMedicineKnowledge } from '../data/medicineKnowledge';
 
 // API Base URL for Java Spring Boot Backend
 const API_BASE_URL = 'http://localhost:8080/api';
@@ -373,13 +374,43 @@ export const apiService = {
 
   // Prescriptions
   getPrescriptions: (): Prescription[] => {
-    return loadData<Prescription[]>(STORAGE_KEYS.PRESCRIPTIONS, INITIAL_PRESCRIPTIONS);
+    const raw = loadData<Prescription[]>(STORAGE_KEYS.PRESCRIPTIONS, INITIAL_PRESCRIPTIONS);
+    // Ensure all items (even legacy stored items) have common-man descriptions & purpose
+    return raw.map(rx => ({
+      ...rx,
+      items: (rx.items || []).map(item => {
+        if (!item.description || !item.purpose) {
+          const medInfo = findMedicineKnowledge(item.medicineName);
+          return {
+            ...item,
+            description: item.description || medInfo.simpleDescription,
+            purpose: item.purpose || medInfo.usedFor,
+            howItWorks: item.howItWorks || medInfo.howItWorks,
+            sideEffectsNote: item.sideEffectsNote || medInfo.commonAdvice,
+          };
+        }
+        return item;
+      })
+    }));
   },
 
   createPrescription: (rxData: Omit<Prescription, 'id' | 'date'>): Prescription => {
     const prescriptions = apiService.getPrescriptions();
+    // Auto-fill common man guidance for any item missing it
+    const enrichedItems = (rxData.items || []).map(item => {
+      const medInfo = findMedicineKnowledge(item.medicineName);
+      return {
+        ...item,
+        description: item.description || medInfo.simpleDescription,
+        purpose: item.purpose || medInfo.usedFor,
+        howItWorks: item.howItWorks || medInfo.howItWorks,
+        sideEffectsNote: item.sideEffectsNote || medInfo.commonAdvice,
+      };
+    });
+
     const newRx: Prescription = {
       ...rxData,
+      items: enrichedItems,
       id: `rx-${Date.now().toString().slice(-4)}`,
       date: new Date().toISOString().split('T')[0],
     };
@@ -398,7 +429,7 @@ export const apiService = {
         diagnosis: rxData.diagnosis,
         clinicalNotes: rxData.clinicalNotes,
         followUpDate: rxData.followUpDate,
-        items: rxData.items,
+        items: enrichedItems,
       }),
     }).catch(err => console.debug('Backend offline, prescription created locally:', err));
 
@@ -407,7 +438,18 @@ export const apiService = {
 
   // Medicine Inventory
   getMedicineStock: (): MedicineStock[] => {
-    return loadData<MedicineStock[]>(STORAGE_KEYS.STOCK, INITIAL_MEDICINE_STOCK);
+    const raw = loadData<MedicineStock[]>(STORAGE_KEYS.STOCK, INITIAL_MEDICINE_STOCK);
+    return raw.map(item => {
+      if (!item.description || !item.purpose) {
+        const medInfo = findMedicineKnowledge(item.name);
+        return {
+          ...item,
+          description: item.description || medInfo.simpleDescription,
+          purpose: item.purpose || medInfo.usedFor,
+        };
+      }
+      return item;
+    });
   },
 
   updateMedicineStock: (id: string, newStock: number): MedicineStock | undefined => {

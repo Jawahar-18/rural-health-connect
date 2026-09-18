@@ -77,23 +77,23 @@ export const WorkerDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6 font-sans">
-      {/* Top Welcome & Quick Actions - Rich Colorful Gradient Header */}
-      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white shadow-xl border-2 border-emerald-700/50 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+      {/* Top Welcome & Quick Actions - Luminous Mint & Teal Gradient Header */}
+      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-teal-600 via-emerald-600 to-teal-700 text-white shadow-lg shadow-teal-900/10 border border-teal-400/40 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
 
         <div className="relative z-10 space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="bg-white/15 backdrop-blur-md text-emerald-200 text-xs font-bold px-3 py-1 rounded-full border border-white/20 uppercase tracking-wider shadow-inner">
+            <span className="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full border border-white/30 uppercase tracking-wider shadow-inner">
               {t('workerPortalTag')}
             </span>
             {!isOnline && (
-              <span className="bg-amber-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full flex items-center gap-1 shadow-md animate-pulse">
+              <span className="bg-amber-400 text-slate-950 text-xs font-black px-3 py-1 rounded-full flex items-center gap-1 shadow-sm animate-pulse">
                 <WifiOff className="w-3.5 h-3.5" /> {t('offlineMode')}
               </span>
             )}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">{t('namaste')}, {currentUser.name}!</h1>
-          <p className="text-xs sm:text-sm text-emerald-100/90 font-medium">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-xs">{t('namaste')}, {currentUser.name}!</h1>
+          <p className="text-xs sm:text-sm text-teal-50 font-medium">
             {t('facility')}: <strong className="text-white">{currentUser.facilityName || 'PHC Junnar'}</strong> • {t('region')}: <strong className="text-white">{t('puneRuralSubDistrict')}</strong>
           </p>
         </div>
@@ -101,66 +101,66 @@ export const WorkerDashboard: React.FC = () => {
         {/* Quick Launch Action Buttons */}
         <div className="relative z-10 flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
           {syncStatus && (
-            <span className="text-xs font-bold text-emerald-200 bg-white/10 backdrop-blur-md px-3 py-2 rounded-xl border border-white/20">
+            <span className="text-xs font-bold text-white bg-black/15 backdrop-blur-md px-3 py-2 rounded-xl border border-white/25">
               {syncStatus}
             </span>
           )}
           <button
             onClick={handleSyncDb}
             disabled={isSyncing}
-            title="Refresh and sync patients with MySQL database"
-            className="bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border-2 border-white/30 text-xs sm:text-sm font-bold py-3 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:scale-102 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+            title="Refresh and sync patients with database"
+            className="bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/30 text-xs sm:text-sm font-bold py-3 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-sm hover:scale-102 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
           >
-            <RefreshCw className={`w-4 h-4 text-emerald-300 ${isSyncing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 text-emerald-100 ${isSyncing ? 'animate-spin' : ''}`} />
             {isSyncing ? 'Syncing...' : 'Sync DB'}
           </button>
           <button
             onClick={() => setTriageModalOpen(true)}
-            className="flex-1 sm:flex-initial bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs sm:text-sm font-black py-3 px-5 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:scale-102 active:scale-95 transition-all"
+            className="flex-1 sm:flex-initial bg-white hover:bg-teal-50 text-teal-950 text-xs sm:text-sm font-black py-3 px-5 rounded-2xl flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:scale-102 active:scale-95 transition-all cursor-pointer"
           >
-            <Stethoscope className="w-4 h-4" /> {t('startTriage')}
+            <Stethoscope className="w-4 h-4 text-teal-700" /> {t('startTriage')}
           </button>
           <Link
             to="/worker/patients/register"
-            className="flex-1 sm:flex-initial bg-white/20 hover:bg-white/30 backdrop-blur-md text-white border-2 border-white/40 text-xs sm:text-sm font-bold py-3 px-5 rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:scale-102 active:scale-95 transition-all"
+            className="flex-1 sm:flex-initial bg-teal-800/80 hover:bg-teal-800 text-white border border-white/30 text-xs sm:text-sm font-bold py-3 px-5 rounded-2xl flex items-center justify-center gap-2 shadow-sm hover:scale-102 active:scale-95 transition-all"
           >
-            <UserPlus className="w-4 h-4 text-emerald-300" /> {t('registerPatient')}
+            <UserPlus className="w-4 h-4 text-emerald-200" /> {t('registerPatient')}
           </Link>
         </div>
       </div>
 
-      {/* Priority KPI Cards Grid - Bold Borders & Elevated Shadows */}
+      {/* Priority KPI Cards Grid - Smooth & Light Refined Shadows */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-        <div className="bg-white p-5 rounded-3xl border-2 border-slate-200/90 hover:border-slate-400 shadow-md hover:shadow-xl transition-all duration-200">
+        <div className="bg-white p-5 rounded-3xl border border-slate-200/80 hover:border-slate-300 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
           <div className="text-xs font-black text-slate-500 uppercase tracking-wider">{t('totalPatients')}</div>
           <div className="text-3xl font-black text-slate-900 mt-2">{patients.length}</div>
           <div className="text-xs text-emerald-700 font-bold mt-1">{t('villageCohort')}</div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border-2 border-rose-300 hover:border-rose-500 bg-rose-50/20 shadow-md hover:shadow-xl transition-all duration-200">
+        <div className="bg-gradient-to-br from-white to-rose-50/40 p-5 rounded-3xl border border-rose-200/80 hover:border-rose-400 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
           <div className="text-xs font-black text-rose-700 uppercase tracking-wider">{t('highRiskPatients')}</div>
           <div className="text-3xl font-black text-rose-600 mt-2">{highRiskPatients.length}</div>
-          <div className="text-xs text-rose-800 font-bold mt-1">{t('immediateOutreach')}</div>
+          <div className="text-xs text-rose-700 font-bold mt-1">{t('immediateOutreach')}</div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border-2 border-purple-300 hover:border-purple-500 bg-purple-50/20 shadow-md hover:shadow-xl transition-all duration-200">
-          <div className="text-xs font-black text-purple-700 uppercase tracking-wider">{t('pendingReferrals')}</div>
-          <div className="text-3xl font-black text-purple-600 mt-2">{pendingReferrals.length}</div>
-          <div className="text-xs text-purple-800 font-bold mt-1">{t('continuityTracking')}</div>
+        <div className="bg-gradient-to-br from-white to-emerald-50/40 p-5 rounded-3xl border border-emerald-200/80 hover:border-emerald-400 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+          <div className="text-xs font-black text-emerald-800 uppercase tracking-wider">{t('pendingReferrals')}</div>
+          <div className="text-3xl font-black text-emerald-700 mt-2">{pendingReferrals.length}</div>
+          <div className="text-xs text-emerald-700 font-bold mt-1">{t('continuityTracking')}</div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border-2 border-amber-300 hover:border-amber-500 bg-amber-50/20 shadow-md hover:shadow-xl transition-all duration-200">
+        <div className="bg-gradient-to-br from-white to-amber-50/40 p-5 rounded-3xl border border-amber-200/80 hover:border-amber-400 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
           <div className="text-xs font-black text-amber-700 uppercase tracking-wider">{t('missedVisits')}</div>
           <div className="text-3xl font-black text-amber-600 mt-2">
             {patients.reduce((acc, p) => acc + (p.missedAppointments > 0 ? 1 : 0), 0)}
           </div>
-          <div className="text-xs text-amber-800 font-bold mt-1">{t('followupDue')}</div>
+          <div className="text-xs text-amber-700 font-bold mt-1">{t('followupDue')}</div>
         </div>
 
-        <div className="bg-white p-5 rounded-3xl border-2 border-indigo-300 hover:border-indigo-500 bg-indigo-50/20 shadow-md hover:shadow-xl transition-all duration-200 col-span-2 sm:col-span-1">
-          <div className="text-xs font-black text-indigo-700 uppercase tracking-wider">{t('offlineRecords')}</div>
-          <div className="text-3xl font-black text-indigo-600 mt-2">{pendingSyncCount}</div>
-          <Link to="/worker/offline-sync" className="text-xs text-indigo-800 font-black hover:underline mt-1 block">
+        <div className="bg-gradient-to-br from-white to-teal-50/40 p-5 rounded-3xl border border-teal-200/80 hover:border-teal-400 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 col-span-2 sm:col-span-1">
+          <div className="text-xs font-black text-teal-800 uppercase tracking-wider">{t('offlineRecords')}</div>
+          <div className="text-3xl font-black text-teal-700 mt-2">{pendingSyncCount}</div>
+          <Link to="/worker/offline-sync" className="text-xs text-teal-800 font-black hover:underline mt-1 block">
             {t('viewSyncStatus')} →
           </Link>
         </div>

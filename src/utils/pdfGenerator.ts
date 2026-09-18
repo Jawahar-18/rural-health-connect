@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import type { FacilityKPI, Patient, Referral, MedicineStock } from '../types';
+import type { FacilityKPI, Patient, Referral, MedicineStock, Prescription } from '../types';
+import { findMedicineKnowledge } from '../data/medicineKnowledge';
 
 export interface DistrictReportData {
   districtName?: string;
@@ -229,5 +230,242 @@ export function generateDistrictQualityReport(data: DistrictReportData) {
 
   // Trigger browser download
   const filename = `Pune_District_Quality_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+  doc.save(filename);
+}
+
+/**
+ * Generates an official OPD Prescription PDF with clear, layman-friendly
+ * drug descriptions and purposes so patients and families understand their medicines.
+ */
+export function generatePrescriptionPdf(rx: Prescription) {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const facility = rx.facilityName || 'Primary Health Centre (PHC) Junnar, Pune';
+  const doctor = rx.doctorName || 'Dr. Rajesh Deshmukh';
+
+  // Top Header Banner
+  doc.setFillColor(15, 42, 42); // Deep Rich Teal
+  doc.rect(0, 0, pageWidth, 38, 'F');
+
+  doc.setFillColor(245, 158, 11); // Amber accent bar
+  doc.rect(0, 38, pageWidth, 2.5, 'F');
+
+  // National / State Health Mission Emblem / Text
+  doc.setTextColor(245, 158, 11);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  doc.text('NATIONAL HEALTH MISSION • GOVERNMENT OF MAHARASHTRA • PUBLIC HEALTH DEPT', 14, 11);
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`${facility.toUpperCase()}`, 14, 19);
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(203, 213, 225);
+  doc.text('AYUSHMAN BHARAT DIGITAL HEALTH MISSION (ABDM) • OUTPATIENT E-PRESCRIPTION', 14, 26);
+
+  // Metadata right-aligned
+  doc.setFontSize(8);
+  doc.setTextColor(255, 255, 255);
+  doc.text(`Prescription ID: ${rx.id.toUpperCase()}`, pageWidth - 14, 13, { align: 'right' });
+  doc.text(`Issue Date: ${rx.date}`, pageWidth - 14, 19, { align: 'right' });
+  doc.text(`ABHA Verified: MH-${rx.patientId.toUpperCase()}`, pageWidth - 14, 25, { align: 'right' });
+
+  let curY = 48;
+
+  // Patient & Doctor Information Box
+  doc.setFillColor(248, 250, 252);
+  doc.setDrawColor(226, 232, 240);
+  doc.roundedRect(14, curY, pageWidth - 28, 26, 2, 2, 'FD');
+
+  // Left: Patient Details
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(71, 85, 105);
+  doc.text('PATIENT PARTICULARS', 18, curY + 6);
+
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text(`${rx.patientName}`, 18, curY + 12);
+
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 116, 139);
+  doc.text(`Patient ID: ${rx.patientId}   •   OPD Registration Category: General`, 18, curY + 18);
+  doc.text(`Sub-Centre / Village Jurisdiction: Rural Block Junnar`, 18, curY + 23);
+
+  // Right: Prescribing Medical Officer
+  const midX = pageWidth / 2 + 10;
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(71, 85, 105);
+  doc.text('PRESCRIBING MEDICAL OFFICER', midX, curY + 6);
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text(`${doctor}`, midX, curY + 12);
+
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 116, 139);
+  doc.text('Reg. No: MMC-2012-4589 • MBBS, MD (Community Medicine)', midX, curY + 18);
+  doc.text(`${facility}`, midX, curY + 23);
+
+  curY += 32;
+
+  // Clinical Diagnosis & Assessment
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 42, 42);
+  doc.text('CLINICAL ASSESSMENT & DIAGNOSIS', 14, curY);
+
+  curY += 4;
+  doc.setFillColor(241, 245, 249);
+  doc.setDrawColor(203, 213, 225);
+  doc.roundedRect(14, curY, pageWidth - 28, 14, 1.5, 1.5, 'FD');
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text(`Diagnosis: ${rx.diagnosis}`, 18, curY + 6);
+
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(71, 85, 105);
+  doc.text(`Clinical Remarks: ${rx.clinicalNotes || 'Adhere strictly to prescribed medicine dosage and drink boiled water.'}`, 18, curY + 11);
+
+  curY += 20;
+
+  // Section Header: Prescribed Medicines & Common Man Guide
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 42, 42);
+  doc.text('PRESCRIBED MEDICINES & PATIENT DRUG GUIDE (WHAT IT IS & WHY IT IS USED)', 14, curY);
+
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 116, 139);
+  doc.text('Every medicine is clearly explained below so you and your family know what the drug does and why it was prescribed.', 14, curY + 4);
+
+  curY += 7;
+
+  // Prepare table rows with common man explanations
+  const tableRows = rx.items.map((item, index) => {
+    const medInfo = findMedicineKnowledge(item.medicineName);
+    const desc = item.description || medInfo.simpleDescription;
+    const purpose = item.purpose || medInfo.usedFor;
+    const advice = item.sideEffectsNote || medInfo.commonAdvice;
+
+    return [
+      `${index + 1}`,
+      `${item.medicineName}\nDosage: ${item.dosage}`,
+      `${item.frequency}\n(${item.durationDays} Days)`,
+      `${desc}`,
+      `${purpose}\n\n* Advice: ${advice}`,
+    ];
+  });
+
+  autoTable(doc, {
+    startY: curY,
+    head: [['#', 'Medicine Name & Dosage', 'Timing & Duration', 'What Is This Drug? (Common Man Guide)', 'Why Is It Used For? (Purpose & Advice)']],
+    body: tableRows,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [15, 42, 42],
+      textColor: [255, 255, 255],
+      fontSize: 8,
+      fontStyle: 'bold',
+      halign: 'left',
+    },
+    columnStyles: {
+      0: { cellWidth: 8, halign: 'center' },
+      1: { cellWidth: 42, fontStyle: 'bold' },
+      2: { cellWidth: 32 },
+      3: { cellWidth: 50 },
+      4: { cellWidth: 50 },
+    },
+    bodyStyles: {
+      fontSize: 7.5,
+      textColor: [30, 41, 59],
+      cellPadding: 3,
+    },
+    alternateRowStyles: {
+      fillColor: [248, 250, 252],
+    },
+    margin: { left: 14, right: 14 },
+  });
+
+  const finalTableY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable?.finalY || curY + 60;
+  let endY = finalTableY + 8;
+
+  if (endY > 230) {
+    doc.addPage();
+    endY = 20;
+  }
+
+  // Patient Instructions & Dispensary Box
+  doc.setFillColor(254, 243, 199); // Light Amber
+  doc.setDrawColor(251, 191, 36);
+  doc.roundedRect(14, endY, pageWidth - 28, 22, 2, 2, 'FD');
+
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(120, 53, 15);
+  doc.text('FREE DISPENSARY & ESSENTIAL INSTRUCTIONS FOR THE PATIENT (सामान्य सूचना):', 18, endY + 6);
+
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(146, 64, 14);
+  doc.text('1. All essential medicines listed on this prescription are dispensed FREE OF CHARGE at PHC Dispensary Counter #2 under NHM.', 18, endY + 11);
+  doc.text('2. Take medicines with clean drinking water after food. Do NOT skip doses or stop early without speaking to your doctor.', 18, endY + 16);
+  if (rx.followUpDate) {
+    doc.setFont('helvetica', 'bold');
+    doc.text(`3. Scheduled Follow-up Date: ${rx.followUpDate}. Please bring this prescription slip with you.`, 18, endY + 21);
+  }
+
+  endY += 28;
+
+  // Doctor Signature & Official Seal Box
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 116, 139);
+  doc.text('Ayushman Bharat Digital Health Record (ABHA Verified)', 14, endY + 8);
+  doc.text('Digitally Authenticated & Time-stamped', 14, endY + 13);
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 42, 42);
+  doc.text(`Digitally Signed by: ${doctor}`, pageWidth - 14, endY + 6, { align: 'right' });
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(71, 85, 105);
+  doc.text(`Medical Officer In-Charge • Reg #MMC-2012-4589`, pageWidth - 14, endY + 11, { align: 'right' });
+  doc.text(`${facility}`, pageWidth - 14, endY + 16, { align: 'right' });
+
+  // Page Footer
+  const totalPages = doc.getNumberOfPages();
+  for (let p = 1; p <= totalPages; p++) {
+    doc.setPage(p);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(148, 163, 184);
+    doc.text(
+      `Rural Health Connect • Outpatient Digital Prescription • ABHA: MH-${rx.patientId.toUpperCase()} • Page ${p} of ${totalPages}`,
+      pageWidth / 2,
+      290,
+      { align: 'center' }
+    );
+  }
+
+  const filename = `Prescription_${rx.patientName.replace(/\s+/g, '_')}_${rx.date}.pdf`;
   doc.save(filename);
 }
